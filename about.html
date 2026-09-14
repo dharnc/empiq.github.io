@@ -299,9 +299,6 @@ section{padding-block:clamp(58px,7vw,116px)}
   letter-spacing:.02em}
 
 /* ---- founder ---- */
-.portrait{width:100%;max-width:264px;height:auto;aspect-ratio:1/1;object-fit:cover;
-  filter:grayscale(1) contrast(1.04);transition:filter .7s cubic-bezier(.19,1,.22,1)}
-.portrait:hover{filter:grayscale(0) contrast(1)}
 .founder-name{font-size:clamp(1.9rem,3.2vw,2.7rem);letter-spacing:-.024em;line-height:1.05}
 .role{color:var(--wine);font-size:1.05rem;margin:10px 0 26px;font-family:var(--display);font-style:italic}
 .bio p{color:var(--quiet)}
@@ -340,6 +337,55 @@ section{padding-block:clamp(58px,7vw,116px)}
   color:rgba(251,250,248,.42)}
 .colophon a{display:inline-block;padding:6px 0;min-height:24px}
 .colophon .spacer{margin-left:auto}
+
+/* ---- leadership block: the portrait sits on a panel that runs off the page,
+       so it is anchored to the composition instead of floating in a column ---- */
+.leader{position:relative;overflow:hidden}
+.leader::before{content:"";position:absolute;left:0;top:0;bottom:0;
+  width:calc((100% - min(var(--max),100%))/2 + var(--gut) + 262px);
+  background:var(--paper-2);z-index:0}
+.leader>.wrap{position:relative;z-index:1}
+@media(max-width:899px){.leader::before{width:100%;bottom:auto;height:58%}}
+/* a cutout on a tonal panel: no frame, no box, so she sits on the page
+   rather than in a window */
+.portrait{width:100%;max-width:230px;height:auto;display:block;
+  filter:grayscale(1) contrast(1.05);transition:filter .8s cubic-bezier(.19,1,.22,1);
+  -webkit-mask-image:linear-gradient(180deg,#000 86%,transparent 100%);
+  mask-image:linear-gradient(180deg,#000 86%,transparent 100%)}
+.portrait:hover{filter:grayscale(0) contrast(1)}
+.leader .c-side{align-self:start}
+
+/* ---- rows come alive on hover ---- */
+.entry,.idxlist .it{transition:background .4s cubic-bezier(.19,1,.22,1)}
+.entry:hover,.idxlist .it:hover{background:rgba(29,158,117,.045)}
+.on-navy .entry:hover,.on-navy .idxlist .it:hover{background:rgba(142,208,188,.07)}
+.entry .n,.entry .hd h3{transition:transform .4s cubic-bezier(.19,1,.22,1)}
+.entry:hover .n{transform:translateX(4px)}
+
+/* ---- the stage rail reads as a timeline ---- */
+.roi-rail{position:relative}
+.roi-rail::before{content:"";position:absolute;left:0;top:0;bottom:0;width:1px;
+  background:linear-gradient(180deg,transparent,var(--mint),transparent);opacity:.35}
+@media(min-width:860px){.roi-rail::before{left:calc(8.333% + 3px)}}
+
+/* ---- portrait framed by the mark ---- */
+
+/* ---- big statement moments ---- */
+.bigstat{font-family:var(--display);font-size:clamp(1.6rem,3.2vw,2.6rem);line-height:1.22;
+  letter-spacing:-.022em;max-width:22ch;margin:0}
+.bigstat em{font-style:italic;color:var(--wine)}
+
+/* ---- network radial ---- */
+.radial{width:100%;height:auto;max-width:960px;margin:0 auto;display:block;overflow:visible}
+.radial .spoke{stroke:var(--rule);stroke-width:.25}
+.radial .node{fill:var(--green-ink)}
+.radial text{font-family:var(--sans);font-size:2.35px;font-weight:600;fill:var(--navy);
+  letter-spacing:.26px;text-transform:uppercase}
+.radial g.cat{transition:opacity .35s}
+.radial:hover g.cat{opacity:.35}
+.radial g.cat:hover{opacity:1}
+.radial g.cat:hover .node{fill:var(--wine)}
+@media(max-width:760px){.radial{display:none}}
 
 /* ---- reveal ---- */
 @media(prefers-reduced-motion:no-preference){
@@ -483,10 +529,9 @@ section{padding-block:clamp(58px,7vw,116px)}
     </div>
   </section>
 
-  <section class="band" id="lee">
+  <section class="band leader" id="lee">
     <div class="wrap g">
-      <div class="c-side rv"><img class="portrait" src="assets/lee-lynch.jpg"
-        alt="Lee Lynch, CEO and Founding Partner of EmpathIQ Advisors" width="264" height="264"></div>
+      <div class="c-side rv"><img class="portrait" src="assets/lee-lynch.png" alt="Lee Lynch, CEO and Founding Partner of EmpathIQ Advisors" width="212" height="253"></div>
       <div class="c-main rv" style="--i:1">
         <span class="label" style="margin-bottom:20px">04 / Leadership</span>
         <h2 class="d2 founder-name">Lee Lynch</h2>

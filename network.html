@@ -289,9 +289,6 @@ section{padding-block:clamp(58px,7vw,116px)}
   letter-spacing:.02em}
 
 /* ---- founder ---- */
-.portrait{width:100%;max-width:264px;height:auto;aspect-ratio:1/1;object-fit:cover;
-  filter:grayscale(1) contrast(1.04);transition:filter .7s cubic-bezier(.19,1,.22,1)}
-.portrait:hover{filter:grayscale(0) contrast(1)}
 .founder-name{font-size:clamp(1.9rem,3.2vw,2.7rem);letter-spacing:-.024em;line-height:1.05}
 .role{color:var(--wine);font-size:1.05rem;margin:10px 0 26px;font-family:var(--display);font-style:italic}
 .bio p{color:var(--quiet)}
@@ -330,6 +327,55 @@ section{padding-block:clamp(58px,7vw,116px)}
   color:rgba(251,250,248,.42)}
 .colophon a{display:inline-block;padding:6px 0;min-height:24px}
 .colophon .spacer{margin-left:auto}
+
+/* ---- leadership block: the portrait sits on a panel that runs off the page,
+       so it is anchored to the composition instead of floating in a column ---- */
+.leader{position:relative;overflow:hidden}
+.leader::before{content:"";position:absolute;left:0;top:0;bottom:0;
+  width:calc((100% - min(var(--max),100%))/2 + var(--gut) + 262px);
+  background:var(--paper-2);z-index:0}
+.leader>.wrap{position:relative;z-index:1}
+@media(max-width:899px){.leader::before{width:100%;bottom:auto;height:58%}}
+/* a cutout on a tonal panel: no frame, no box, so she sits on the page
+   rather than in a window */
+.portrait{width:100%;max-width:230px;height:auto;display:block;
+  filter:grayscale(1) contrast(1.05);transition:filter .8s cubic-bezier(.19,1,.22,1);
+  -webkit-mask-image:linear-gradient(180deg,#000 86%,transparent 100%);
+  mask-image:linear-gradient(180deg,#000 86%,transparent 100%)}
+.portrait:hover{filter:grayscale(0) contrast(1)}
+.leader .c-side{align-self:start}
+
+/* ---- rows come alive on hover ---- */
+.entry,.idxlist .it{transition:background .4s cubic-bezier(.19,1,.22,1)}
+.entry:hover,.idxlist .it:hover{background:rgba(29,158,117,.045)}
+.on-navy .entry:hover,.on-navy .idxlist .it:hover{background:rgba(142,208,188,.07)}
+.entry .n,.entry .hd h3{transition:transform .4s cubic-bezier(.19,1,.22,1)}
+.entry:hover .n{transform:translateX(4px)}
+
+/* ---- the stage rail reads as a timeline ---- */
+.roi-rail{position:relative}
+.roi-rail::before{content:"";position:absolute;left:0;top:0;bottom:0;width:1px;
+  background:linear-gradient(180deg,transparent,var(--mint),transparent);opacity:.35}
+@media(min-width:860px){.roi-rail::before{left:calc(8.333% + 3px)}}
+
+/* ---- portrait framed by the mark ---- */
+
+/* ---- big statement moments ---- */
+.bigstat{font-family:var(--display);font-size:clamp(1.6rem,3.2vw,2.6rem);line-height:1.22;
+  letter-spacing:-.022em;max-width:22ch;margin:0}
+.bigstat em{font-style:italic;color:var(--wine)}
+
+/* ---- network radial ---- */
+.radial{width:100%;height:auto;max-width:960px;margin:0 auto;display:block;overflow:visible}
+.radial .spoke{stroke:var(--rule);stroke-width:.25}
+.radial .node{fill:var(--green-ink)}
+.radial text{font-family:var(--sans);font-size:2.35px;font-weight:600;fill:var(--navy);
+  letter-spacing:.26px;text-transform:uppercase}
+.radial g.cat{transition:opacity .35s}
+.radial:hover g.cat{opacity:.35}
+.radial g.cat:hover{opacity:1}
+.radial g.cat:hover .node{fill:var(--wine)}
+@media(max-width:760px){.radial{display:none}}
 
 /* ---- reveal ---- */
 @media(prefers-reduced-motion:no-preference){
@@ -383,6 +429,12 @@ section{padding-block:clamp(58px,7vw,116px)}
         <p class="lede">Senior advisors across advocacy, policy, clinical practice, media, research,
         creative, and technology. The team flexes as an engagement evolves.</p>
       </div>
+    </div>
+  </section>
+
+  <section class="band dense">
+    <div class="wrap">
+      <div class="rv"><svg class="radial" viewBox="0 0 200 124" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The advisory network: twelve areas of expertise arranged around a single centre."><circle cx="100.0" cy="62.0" r="24" fill="none" stroke="#0F2C3F" stroke-width=".7" pathLength="100" stroke-dasharray="72 28" transform="rotate(45 100.0 62.0)" stroke-linecap="round" opacity=".8"/><circle cx="100.0" cy="62.0" r="17" fill="none" stroke="#1D9E75" stroke-width=".7" pathLength="100" stroke-dasharray="72 28" transform="rotate(45 100.0 62.0)" stroke-linecap="round" opacity=".8"/><circle cx="100.0" cy="62.0" r="10" fill="none" stroke="#8ED0BC" stroke-width=".7" pathLength="100" stroke-dasharray="72 28" transform="rotate(45 100.0 62.0)" stroke-linecap="round" opacity=".8"/><circle cx="100.0" cy="62.0" r="2.4" fill="#7A2050"/><g class="cat"><line class="spoke" x1="100.00" y1="36.50" x2="100.00" y2="31.00"/><circle class="node" r-orig="1" cx="100.00" cy="31.00" r="1.15"/><text x="100.00" y="26.60" text-anchor="middle">Advocacy & patient engagement</text></g><g class="cat"><line class="spoke" x1="112.75" y1="39.92" x2="115.50" y2="35.15"/><circle class="node" r-orig="1" cx="115.50" cy="35.15" r="1.15"/><text x="117.00" y="33.56" text-anchor="start">Policy</text></g><g class="cat"><line class="spoke" x1="122.08" y1="49.25" x2="126.85" y2="46.50"/><circle class="node" r-orig="1" cx="126.85" cy="46.50" r="1.15"/><text x="129.44" y="46.00" text-anchor="start">Clinical perspective</text></g><g class="cat"><line class="spoke" x1="125.50" y1="62.00" x2="131.00" y2="62.00"/><circle class="node" r-orig="1" cx="131.00" cy="62.00" r="1.15"/><text x="134.00" y="63.00" text-anchor="start">Campaigns</text></g><g class="cat"><line class="spoke" x1="122.08" y1="74.75" x2="126.85" y2="77.50"/><circle class="node" r-orig="1" cx="126.85" cy="77.50" r="1.15"/><text x="129.44" y="80.00" text-anchor="start">Corporate affairs</text></g><g class="cat"><line class="spoke" x1="112.75" y1="84.08" x2="115.50" y2="88.85"/><circle class="node" r-orig="1" cx="115.50" cy="88.85" r="1.15"/><text x="117.00" y="92.44" text-anchor="start">Media</text></g><g class="cat"><line class="spoke" x1="100.00" y1="87.50" x2="100.00" y2="93.00"/><circle class="node" r-orig="1" cx="100.00" cy="93.00" r="1.15"/><text x="100.00" y="99.00" text-anchor="middle">State advocacy</text></g><g class="cat"><line class="spoke" x1="87.25" y1="84.08" x2="84.50" y2="88.85"/><circle class="node" r-orig="1" cx="84.50" cy="88.85" r="1.15"/><text x="83.00" y="92.44" text-anchor="end">Global breadth</text></g><g class="cat"><line class="spoke" x1="77.92" y1="74.75" x2="73.15" y2="77.50"/><circle class="node" r-orig="1" cx="73.15" cy="77.50" r="1.15"/><text x="70.56" y="80.00" text-anchor="end">Research</text></g><g class="cat"><line class="spoke" x1="74.50" y1="62.00" x2="69.00" y2="62.00"/><circle class="node" r-orig="1" cx="69.00" cy="62.00" r="1.15"/><text x="66.00" y="63.00" text-anchor="end">Digital & creative</text></g><g class="cat"><line class="spoke" x1="77.92" y1="49.25" x2="73.15" y2="46.50"/><circle class="node" r-orig="1" cx="73.15" cy="46.50" r="1.15"/><text x="70.56" y="46.00" text-anchor="end">Writing & video</text></g><g class="cat"><line class="spoke" x1="87.25" y1="39.92" x2="84.50" y2="35.15"/><circle class="node" r-orig="1" cx="84.50" cy="35.15" r="1.15"/><text x="83.00" y="33.56" text-anchor="end">Artificial intelligence</text></g></svg></div>
     </div>
   </section>
 
