@@ -54,7 +54,7 @@ INTRO_CSS = r"""
 
 #introSkip{position:absolute;right:clamp(18px,4vw,46px);bottom:clamp(18px,4vw,46px);
   background:none;border:0;font:inherit;font-size:.66rem;font-weight:600;letter-spacing:.17em;
-  text-transform:uppercase;color:var(--stone);cursor:pointer;padding:10px;
+  text-transform:uppercase;color:var(--stone-ink);cursor:pointer;padding:10px;
   opacity:0;animation:seen .01s linear 1s forwards;transition:color .2s}
 #introSkip:hover{color:var(--navy)}
 #intro.flying #introInner{transition:transform 1s cubic-bezier(.62,0,.18,1)}
@@ -109,6 +109,10 @@ INTRO_JS = r"""
 CSS = r"""
 :root{
   --navy:#0F2C3F; --green:#1D9E75; --mint:#8ED0BC; --stone:#9C988E; --wine:#7A2050;
+  /* brand stone and green are too light for text on the light blocks
+     (2.76:1 and 3.25:1). These darkened pair clear 4.5:1 on paper, stone
+     and mint alike; the logo lockup keeps the true brand colours. */
+  --stone-ink:#716D63; --green-ink:#177C5C;
   --paper:#FBFAF8; --paper-2:#F2F0EA; --quiet:#5A6A72;
   --rule:#D9D4CB; --rule-2:#E7E3DA; --rule-dark:rgba(251,250,248,.15);
   --display:"Playfair Display",Georgia,serif;
@@ -133,7 +137,7 @@ h1,h2,h3{font-family:var(--display);font-weight:400;margin:0;text-wrap:balance}
 .d3{font-size:clamp(1.35rem,2.1vw,1.85rem);line-height:1.2;letter-spacing:-.014em}
 h3{font-size:1.06rem;line-height:1.32;letter-spacing:-.008em}
 .label{font-family:var(--sans);font-size:.66rem;font-weight:600;letter-spacing:.17em;
-  text-transform:uppercase;color:var(--stone);display:block}
+  text-transform:uppercase;color:var(--stone-ink);display:block}
 .serif-it{font-family:var(--display);font-style:italic;letter-spacing:0}
 p{margin:0 0 1.15em;max-width:62ch}
 p:last-child{margin-bottom:0}
@@ -163,7 +167,7 @@ section{padding-block:clamp(58px,7vw,116px)}
 
 /* ---- section index ---- */
 .shead{margin-bottom:clamp(26px,3.2vw,44px)}
-.shead .idx{font-size:.66rem;font-weight:600;letter-spacing:.17em;color:var(--green);
+.shead .idx{font-size:.66rem;font-weight:600;letter-spacing:.17em;color:var(--green-ink);
   display:block;margin-bottom:14px}
 .shead p{margin-top:16px;color:var(--quiet);font-size:.98rem;max-width:34ch}
 
@@ -223,7 +227,7 @@ section{padding-block:clamp(58px,7vw,116px)}
   width:min(680px,62vw);opacity:.15;pointer-events:none}
 @media(max-width:900px){.hero-arcs{right:-38%;opacity:.08}}
 .hero .wrap{position:relative;z-index:2;width:100%}
-.hero .tagline{font-size:clamp(1rem,1.35vw,1.2rem);color:var(--stone);margin:0 0 clamp(26px,3.4vw,40px)}
+.hero .tagline{font-size:clamp(1rem,1.35vw,1.2rem);color:var(--stone-ink);margin:0 0 clamp(26px,3.4vw,40px)}
 .hero h1{max-width:26ch}
 .hero .lede{margin-top:clamp(26px,3vw,38px)}
 .hero-sub{margin:clamp(24px,2.8vw,34px) 0 0;color:var(--navy);max-width:34ch;
@@ -240,7 +244,7 @@ section{padding-block:clamp(58px,7vw,116px)}
 /* ---- page head ---- */
 .page-head{padding-block:clamp(52px,6.4vw,104px) clamp(34px,4vw,60px)}
 .page-head .label{margin-bottom:20px}
-.page-head h1{max-width:16ch}
+.page-head h1{max-width:19ch;font-size:clamp(2.25rem,4.3vw,3.55rem);line-height:1.06}
 .page-head .lede{margin-top:26px;max-width:44ch}
 
 /* ---- dark ---- */
@@ -295,7 +299,7 @@ section{padding-block:clamp(58px,7vw,116px)}
 .rows{border-top:1px solid var(--rule)}
 .entry{border-bottom:1px solid var(--rule);padding-block:clamp(28px,3.4vw,44px)}
 .entry .n{grid-column:1/-1;font-size:.66rem;font-weight:600;letter-spacing:.17em;
-  color:var(--green);margin-bottom:12px}
+  color:var(--green-ink);margin-bottom:12px}
 .entry .hd{grid-column:1/-1;margin-bottom:14px}
 .entry .hd h3{font-family:var(--display);font-size:clamp(1.3rem,2vw,1.75rem);
   letter-spacing:-.016em;line-height:1.15}
@@ -350,13 +354,14 @@ section{padding-block:clamp(58px,7vw,116px)}
 .founder-name{font-size:clamp(1.9rem,3.2vw,2.7rem);letter-spacing:-.024em;line-height:1.05}
 .role{color:var(--wine);font-size:1.05rem;margin:10px 0 26px;font-family:var(--display);font-style:italic}
 .bio p{color:var(--quiet)}
-.bio a{text-decoration:none;box-shadow:inset 0 -1px 0 var(--rule);transition:box-shadow .3s}
+.bio a{text-decoration:none;box-shadow:inset 0 -1px 0 var(--rule);transition:box-shadow .3s;
+  display:inline-block;padding-block:2px}
 .bio a:hover{box-shadow:inset 0 -1px 0 var(--wine)}
 
 /* ---- form ---- */
 .form{display:grid;gap:22px;max-width:520px}
 .field{display:grid;gap:8px}
-.field label{font-size:.66rem;font-weight:600;letter-spacing:.17em;text-transform:uppercase;color:var(--stone)}
+.field label{font-size:.66rem;font-weight:600;letter-spacing:.17em;text-transform:uppercase;color:var(--stone-ink)}
 .field input,.field textarea,.field select{font:inherit;font-size:1rem;color:var(--navy);
   background:transparent;border:0;border-bottom:1px solid var(--rule);padding:9px 0;width:100%;
   border-radius:0;transition:border-color .3s}
@@ -380,7 +385,9 @@ section{padding-block:clamp(58px,7vw,116px)}
   text-decoration:none;padding-block:4px}
 .foot-col a:hover{color:var(--paper)}
 .colophon{border-top:1px solid var(--rule-dark);margin-top:clamp(38px,5vw,64px);padding-top:24px;
-  display:flex;flex-wrap:wrap;gap:10px 30px;font-size:.8rem;color:rgba(251,250,248,.42)}
+  display:flex;flex-wrap:wrap;align-items:center;gap:10px 30px;font-size:.8rem;
+  color:rgba(251,250,248,.42)}
+.colophon a{display:inline-block;padding:6px 0;min-height:24px}
 .colophon .spacer{margin-left:auto}
 
 /* ---- reveal ---- */
