@@ -329,6 +329,16 @@ section{padding-block:clamp(58px,7vw,116px)}
 .on-navy .idxlist .it{border-bottom-color:var(--rule-dark)}
 .on-navy .idxlist .it p{color:rgba(251,250,248,.7)}
 
+/* ---- specialty lists: the enumerations set as lists, not prose ---- */
+.spec{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr;
+  gap:0 clamp(24px,3vw,48px)}
+@media(min-width:620px){.spec{grid-template-columns:1fr 1fr}}
+.spec li{font-size:.93rem;line-height:1.45;color:var(--quiet);padding:8px 0 8px 15px;
+  position:relative;border-bottom:1px solid var(--rule-2)}
+.spec li::before{content:"";position:absolute;left:0;top:15px;width:4px;height:4px;
+  border-radius:50%;background:var(--green)}
+.on-stone .spec li{border-bottom-color:#E3DFD6}
+
 /* ---- inline ruled list ---- */
 .ruled{list-style:none;margin:0;padding:0;border-top:1px solid var(--rule)}
 .ruled li{border-bottom:1px solid var(--rule-2);padding:13px 0;font-size:.98rem;
@@ -372,8 +382,8 @@ section{padding-block:clamp(58px,7vw,116px)}
 
 /* ---- footer ---- */
 .site-foot{background:#092130;color:rgba(251,250,248,.55);padding-block:clamp(48px,6vw,84px) 34px}
-.foot-word{font-family:var(--display);font-size:clamp(2.6rem,9vw,7rem);line-height:.9;
-  color:rgba(251,250,248,.1);letter-spacing:-.035em;margin:0 0 clamp(36px,5vw,64px);
+.foot-word{font-family:var(--display);font-size:clamp(1.8rem,4.6vw,3.4rem);line-height:.95;
+  color:rgba(251,250,248,.13);letter-spacing:-.028em;margin:0 0 clamp(30px,4vw,52px);
   user-select:none}
 .foot-col{grid-column:1/-1;margin-bottom:26px}
 @media(min-width:760px){.foot-col{grid-column:span 3;margin-bottom:0}}
@@ -399,8 +409,13 @@ section{padding-block:clamp(58px,7vw,116px)}
    rather than in a window */
 .portrait{width:100%;max-width:230px;height:auto;display:block;
   filter:grayscale(1) contrast(1.05);transition:filter .8s cubic-bezier(.19,1,.22,1);
-  -webkit-mask-image:linear-gradient(180deg,#000 86%,transparent 100%);
-  mask-image:linear-gradient(180deg,#000 86%,transparent 100%)}
+  /* white, not black: an engine that luminance-masks instead of alpha-masks
+     would hide the whole image if this were #000 */
+  -webkit-mask-image:linear-gradient(180deg,#fff 86%,transparent 100%);
+  mask-image:linear-gradient(180deg,#fff 86%,transparent 100%);
+  -webkit-mask-mode:alpha;mask-mode:alpha;
+  -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
+  -webkit-mask-size:100% 100%;mask-size:100% 100%}
 .portrait:hover{filter:grayscale(0) contrast(1)}
 .leader .c-side{align-self:start}
 
@@ -424,17 +439,7 @@ section{padding-block:clamp(58px,7vw,116px)}
   letter-spacing:-.022em;max-width:22ch;margin:0}
 .bigstat em{font-style:italic;color:var(--wine)}
 
-/* ---- network radial ---- */
-.radial{width:100%;height:auto;max-width:960px;margin:0 auto;display:block;overflow:visible}
-.radial .spoke{stroke:var(--rule);stroke-width:.25}
-.radial .node{fill:var(--green-ink)}
-.radial text{font-family:var(--sans);font-size:2.35px;font-weight:600;fill:var(--navy);
   letter-spacing:.26px;text-transform:uppercase}
-.radial g.cat{transition:opacity .35s}
-.radial:hover g.cat{opacity:.35}
-.radial g.cat:hover{opacity:1}
-.radial g.cat:hover .node{fill:var(--wine)}
-@media(max-width:760px){.radial{display:none}}
 
 /* ---- reveal ---- */
 @media(prefers-reduced-motion:no-preference){
@@ -1100,27 +1105,102 @@ NETWORK = f"""
     </div>
   </section>
 
-  <section class="band dense">
+  <section class="band">
     <div class="wrap">
-      <div class="rv"><svg class="radial" viewBox="0 0 200 124" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The advisory network: twelve areas of expertise arranged around a single centre."><circle cx="100.0" cy="62.0" r="24" fill="none" stroke="#0F2C3F" stroke-width=".7" pathLength="100" stroke-dasharray="72 28" transform="rotate(45 100.0 62.0)" stroke-linecap="round" opacity=".8"/><circle cx="100.0" cy="62.0" r="17" fill="none" stroke="#1D9E75" stroke-width=".7" pathLength="100" stroke-dasharray="72 28" transform="rotate(45 100.0 62.0)" stroke-linecap="round" opacity=".8"/><circle cx="100.0" cy="62.0" r="10" fill="none" stroke="#8ED0BC" stroke-width=".7" pathLength="100" stroke-dasharray="72 28" transform="rotate(45 100.0 62.0)" stroke-linecap="round" opacity=".8"/><circle cx="100.0" cy="62.0" r="2.4" fill="#7A2050"/><g class="cat"><line class="spoke" x1="100.00" y1="36.50" x2="100.00" y2="31.00"/><circle class="node" r-orig="1" cx="100.00" cy="31.00" r="1.15"/><text x="100.00" y="26.60" text-anchor="middle">Advocacy & patient engagement</text></g><g class="cat"><line class="spoke" x1="112.75" y1="39.92" x2="115.50" y2="35.15"/><circle class="node" r-orig="1" cx="115.50" cy="35.15" r="1.15"/><text x="117.00" y="33.56" text-anchor="start">Policy</text></g><g class="cat"><line class="spoke" x1="122.08" y1="49.25" x2="126.85" y2="46.50"/><circle class="node" r-orig="1" cx="126.85" cy="46.50" r="1.15"/><text x="129.44" y="46.00" text-anchor="start">Clinical perspective</text></g><g class="cat"><line class="spoke" x1="125.50" y1="62.00" x2="131.00" y2="62.00"/><circle class="node" r-orig="1" cx="131.00" cy="62.00" r="1.15"/><text x="134.00" y="63.00" text-anchor="start">Campaigns</text></g><g class="cat"><line class="spoke" x1="122.08" y1="74.75" x2="126.85" y2="77.50"/><circle class="node" r-orig="1" cx="126.85" cy="77.50" r="1.15"/><text x="129.44" y="80.00" text-anchor="start">Corporate affairs</text></g><g class="cat"><line class="spoke" x1="112.75" y1="84.08" x2="115.50" y2="88.85"/><circle class="node" r-orig="1" cx="115.50" cy="88.85" r="1.15"/><text x="117.00" y="92.44" text-anchor="start">Media</text></g><g class="cat"><line class="spoke" x1="100.00" y1="87.50" x2="100.00" y2="93.00"/><circle class="node" r-orig="1" cx="100.00" cy="93.00" r="1.15"/><text x="100.00" y="99.00" text-anchor="middle">State advocacy</text></g><g class="cat"><line class="spoke" x1="87.25" y1="84.08" x2="84.50" y2="88.85"/><circle class="node" r-orig="1" cx="84.50" cy="88.85" r="1.15"/><text x="83.00" y="92.44" text-anchor="end">Global breadth</text></g><g class="cat"><line class="spoke" x1="77.92" y1="74.75" x2="73.15" y2="77.50"/><circle class="node" r-orig="1" cx="73.15" cy="77.50" r="1.15"/><text x="70.56" y="80.00" text-anchor="end">Research</text></g><g class="cat"><line class="spoke" x1="74.50" y1="62.00" x2="69.00" y2="62.00"/><circle class="node" r-orig="1" cx="69.00" cy="62.00" r="1.15"/><text x="66.00" y="63.00" text-anchor="end">Digital & creative</text></g><g class="cat"><line class="spoke" x1="77.92" y1="49.25" x2="73.15" y2="46.50"/><circle class="node" r-orig="1" cx="73.15" cy="46.50" r="1.15"/><text x="70.56" y="46.00" text-anchor="end">Writing & video</text></g><g class="cat"><line class="spoke" x1="87.25" y1="39.92" x2="84.50" y2="35.15"/><circle class="node" r-orig="1" cx="84.50" cy="35.15" r="1.15"/><text x="83.00" y="33.56" text-anchor="end">Artificial intelligence</text></g></svg></div>
+      <div class="g" style="margin-bottom:clamp(22px,2.6vw,34px)">
+        <div class="c-wide rv"><span class="label">Advocacy &amp; policy</span></div>
+      </div>
+      <div class="rows">
+      <div class="entry g rv">
+        <div class="n">01</div>
+        <div class="hd"><h3>Advocacy &amp; patient engagement</h3></div>
+        <div class="bd"><ul class="spec"><li>Health equity &amp; women&rsquo;s health founders</li><li>Patient engagement pioneers</li><li>Nonprofit &amp; philanthropic strategy</li><li>Cross-aisle legislative strategy</li><li>Pharmaceutical public affairs</li><li>Alliance development</li><li>Social justice organizing</li><li>Reimbursement &amp; policy</li></ul></div>
+      </div>
+      <div class="entry g rv">
+        <div class="n">02</div>
+        <div class="hd"><h3>Policy</h3></div>
+        <div class="bd"><ul class="spec"><li>FDA regulatory consulting</li><li>Former FDA official, innovation think tank</li><li>Medicaid, health IT &amp; managed care</li><li>Market access &amp; drug pricing</li><li>Political strategy, both parties</li><li>Federal &amp; state maternal and child health</li><li>MedTech, imaging, diagnostics &amp; AI</li><li>Financial markets</li></ul></div>
+      </div>
+      <div class="entry g rv">
+        <div class="n">03</div>
+        <div class="hd"><h3>State advocacy</h3></div>
+        <div class="bd"><ul class="spec"><li>Award-winning strategists</li><li>Published authors</li><li>Multi-state firm reach</li><li>Coordinated advocacy &amp; media campaigns</li></ul></div>
+      </div>
+      <div class="entry g rv">
+        <div class="n">04</div>
+        <div class="hd"><h3>Global breadth</h3></div>
+        <div class="bd"><ul class="spec"><li>Advisors across countries and continents</li><li>Multiple health and coverage systems</li><li>Approval &amp; reform</li><li>Patient engagement</li><li>Policy &amp; communications</li></ul></div>
+      </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="on-stone">
+    <div class="wrap">
+      <div class="g" style="margin-bottom:clamp(22px,2.6vw,34px)">
+        <div class="c-wide rv"><span class="label">Evidence &amp; practice</span></div>
+      </div>
+      <div class="rows">
+      <div class="entry g rv">
+        <div class="n">05</div>
+        <div class="hd"><h3>Clinical perspective</h3></div>
+        <div class="bd"><ul class="spec"><li>Vaccines &amp; infectious disease</li><li>Public health &amp; misinformation</li><li>Cardiology</li><li>Health equity</li><li>Patient safety</li><li>Pharmacy practice &amp; care coordination</li><li>Obstetrics, gynecology &amp; menopause</li><li>Mental, behavioral &amp; developmental health</li><li>Neuromuscular &amp; rare disorders</li><li>Aging &amp; chronic conditions</li><li>Medical society leadership</li></ul></div>
+      </div>
+      <div class="entry g rv">
+        <div class="n">06</div>
+        <div class="hd"><h3>Research</h3></div>
+        <div class="bd"><ul class="spec"><li>General population polling</li><li>Message testing</li><li>Investment-sector analysis</li><li>Media &amp; data analytics</li><li>Evidence-based science communication</li><li>HCP &amp; specialist research</li><li>Market research</li><li>Clinical trial expertise</li></ul></div>
+      </div>
+      </div>
     </div>
   </section>
 
   <section class="band">
     <div class="wrap">
-      <div class="idxlist">
-{item("Advocacy &amp; patient engagement","Founders of leading health equity and women&rsquo;s health organizations, patient engagement pioneers, nonprofit and philanthropic strategists, legislative strategists who build coalitions across the aisle, pharmaceutical public affairs and alliance development executives, a veteran social justice organizer, and reimbursement and policy specialists.")}
-{item("Policy","An FDA regulatory consultant with decades of public policy experience, a former FDA official leading a premier innovation think tank, a Medicaid, health IT, and managed care strategist, a biopharma market access advisor fluent in drug pricing policy, political strategists from both sides of the aisle, a federal and state health policy veteran specializing in maternal and child health, a regulatory expert covering medical technology, imaging, diagnostics and AI, and a financial markets advisor.")}
-{item("Clinical perspective","Vaccines, infectious disease and public health, misinformation, cardiology, health equity, patient safety, pharmacy practice, care coordination, obstetrics and gynecology, women&rsquo;s health and menopause, mental, behavioral and developmental health, neuromuscular and other rare disorders, aging and chronic conditions, and medical society acumen.")}
-{item("Campaigns","Advocacy, public affairs, public relations, and digital specialists with proven talent to mobilize a message from strategy through execution.")}
-{item("Corporate affairs &amp; account strategy","Award-winning narrative strategy for life sciences brands, executive-level health care leadership honed atop a national medical society, and the founder&rsquo;s-eye perspective from leading consulting firms.")}
-{item("Media","Independent PR consulting, Washington-based communications strategy, and agency leadership across the US and globally. These advisors know how to earn coverage on and off line, manage newsroom relationships, and protect reputations under pressure.")}
-{item("State advocacy","Award-winning communications strategists, published authors, and firms with reach across states throughout the US and track records of moving policy through coordinated advocacy and media campaigns.")}
-{item("Global breadth","Advisors spanning countries and continents, health conditions, and health care and coverage systems: approval, reform, advocacy, patient engagement, policy, and communications experts with decades of experience.")}
-{item("Research","General population polling, message testing, investment-sector analysis, media and data analytics, evidence-based science communication, specialist and HCP research, market research, and trial expertise.")}
-{item("Digital &amp; creative","In-house creative directors known for hands-on campaign work, marketing and design specialists, independent designers and illustrators who build brand identity from the ground up, strategists who plan brands and web experiences, and the founder of a full-service branding, web, and print agency trusted by nonprofits and associations.")}
-{item("Writing &amp; video","Strategic storytellers who know how to deliver content that fits any medium and reaches any audience, plus a full-service, script-to-screen studio producing film, live event, and digital content for leading health care and advocacy organizations.")}
-{item("Artificial intelligence","A systems engineer and startup founder building practical, safety-first AI with human oversight built in, alongside a strategist and published author who helps organizations translate AI capability into measurable growth.")}
+      <div class="g" style="margin-bottom:clamp(22px,2.6vw,34px)">
+        <div class="c-wide rv"><span class="label">Communications</span></div>
+      </div>
+      <div class="rows">
+      <div class="entry g rv">
+        <div class="n">07</div>
+        <div class="hd"><h3>Campaigns</h3></div>
+        <div class="bd"><ul class="spec"><li>Advocacy</li><li>Public affairs</li><li>Public relations</li><li>Digital</li></ul></div>
+      </div>
+      <div class="entry g rv">
+        <div class="n">08</div>
+        <div class="hd"><h3>Corporate affairs &amp; account strategy</h3></div>
+        <div class="bd"><ul class="spec"><li>Life sciences narrative strategy</li><li>National medical society leadership</li><li>Consulting firm founders</li></ul></div>
+      </div>
+      <div class="entry g rv">
+        <div class="n">09</div>
+        <div class="hd"><h3>Media</h3></div>
+        <div class="bd"><ul class="spec"><li>Independent PR consulting</li><li>Washington communications strategy</li><li>US &amp; global agency leadership</li><li>Newsroom relationships</li><li>Reputation under pressure</li></ul></div>
+      </div>
+      <div class="entry g rv">
+        <div class="n">10</div>
+        <div class="hd"><h3>Writing &amp; video</h3></div>
+        <div class="bd"><ul class="spec"><li>Strategic storytelling in any medium</li><li>Script-to-screen studio</li><li>Film, live event &amp; digital content</li></ul></div>
+      </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="on-stone">
+    <div class="wrap">
+      <div class="g" style="margin-bottom:clamp(22px,2.6vw,34px)">
+        <div class="c-wide rv"><span class="label">Creative &amp; technology</span></div>
+      </div>
+      <div class="rows">
+      <div class="entry g rv">
+        <div class="n">11</div>
+        <div class="hd"><h3>Digital &amp; creative</h3></div>
+        <div class="bd"><ul class="spec"><li>In-house creative direction</li><li>Marketing &amp; design</li><li>Independent designers &amp; illustrators</li><li>Brand &amp; web strategy</li><li>Full-service branding agency</li></ul></div>
+      </div>
+      <div class="entry g rv">
+        <div class="n">12</div>
+        <div class="hd"><h3>Artificial intelligence</h3></div>
+        <div class="bd"><ul class="spec"><li>Safety-first AI engineering</li><li>Human oversight by design</li><li>AI strategy &amp; published authorship</li><li>Turning capability into measurable growth</li></ul></div>
+      </div>
       </div>
     </div>
   </section>
