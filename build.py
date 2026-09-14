@@ -436,16 +436,25 @@ section{padding-block:clamp(58px,7vw,116px)}
 /* ---- arc device ---- */
 .cropped{position:relative;overflow:hidden}
 .cropped>.wrap{position:relative;z-index:2}
-.arcmark{position:absolute;z-index:0;pointer-events:none;opacity:.17}
+/* The centre of the mark is placed on a column line of the same 12-column grid
+   the type sits on, so its position is derived rather than eyeballed.
+   --arc-col is which line: 3 = under the side column, 9 = under the main column. */
+.cropped{--cw:calc(min(100%, var(--max)) - 2 * var(--gut));
+  --colw:calc((var(--cw) - 11 * var(--col-gap)) / 12);
+  --edge:calc((100% - min(100%, var(--max))) / 2 + var(--gut));
+  --arc-col:3}
+.arcmark{position:absolute;z-index:0;pointer-events:none;opacity:.17;
+  top:var(--arc-y,50%);
+  left:calc(var(--edge) + var(--arc-col) * var(--colw)
+       + (var(--arc-col) - .5) * var(--col-gap));
+  transform:translate(-50%,-50%);
+  width:clamp(460px,52vw,820px)}
+.arc-right{--arc-col:9}
 .on-navy .arcmark,.deepest .arcmark,.contact .arcmark{opacity:.26}
-/* each placement crops against a different edge */
-.am-bl{left:calc(-1 * clamp(190px,17vw,330px));bottom:calc(-1 * clamp(150px,13vw,260px));
-  width:clamp(430px,40vw,700px)}
-.am-tr{right:calc(-1 * clamp(200px,18vw,360px));top:calc(-1 * clamp(160px,14vw,280px));
-  width:clamp(430px,40vw,700px)}
-.am-br{right:calc(-1 * clamp(180px,16vw,320px));bottom:calc(-1 * clamp(170px,15vw,300px));
-  width:clamp(420px,38vw,660px)}
-@media(max-width:820px){.arcmark{opacity:.09;width:66vw}}
+/* the device exists to occupy dead space created by the multi-column grid.
+   Below the breakpoint the grid is a single column, so the dead space - and the
+   device - goes away. */
+@media(max-width:900px){.arcmark{display:none}}
 
 /* ---- reveal ---- */
 @media(prefers-reduced-motion:no-preference){
@@ -702,7 +711,7 @@ SECTORS = """<ul class="ruled cols2 rv">
 
 CONTACT_BAND = f"""
   <section class="contact airy cropped">
-    {arc_true("am-br", dark=True)}
+    {arc_true("arc-right", dark=True)}
     <div class="wrap g">
       <div class="c-wide rv">
         <h2 class="d2">Tell us what&rsquo;s standing in the way.</h2>
@@ -795,8 +804,7 @@ HOME = f"""
 
 {ROI}
 
-  <section class="band cropped">
-    {arc_true("am-bl")}
+  <section class="band">
     <div class="wrap g">
       <div class="c-side rv">
         <div class="shead"><span class="idx">01 / Services</span>
@@ -826,8 +834,7 @@ HOME = f"""
     </div>
   </section>
 
-  <section class="on-navy cropped">
-    {arc_true("am-tr", dark=True)}
+  <section class="on-navy">
     <div class="wrap g">
       <div class="c-side rv">
         <div class="shead"><span class="idx">03 / Network</span>
@@ -907,8 +914,7 @@ ABOUT = f"""
     </div>
   </section>
 
-  <section class="on-navy airy cropped">
-    {arc_true("am-bl", dark=True)}
+  <section class="on-navy airy">
     <div class="wrap g">
       <div class="c-side rv"><span class="label">01 / Mission</span></div>
       <div class="c-main rv" style="--i:1">
@@ -1028,8 +1034,7 @@ SERVICES = f"""
     </div>
   </section>
 
-  <section class="band cropped">
-    {arc_true("am-bl")}
+  <section class="band">
     <div class="wrap">
       <div class="rows">
 {entry("01","Advocacy &amp; alliance building","""<p>We design and manage coalitions, advocacy campaigns, and patient, consumer, and population
@@ -1076,8 +1081,7 @@ SERVICES = f"""
     </div>
   </section>
 
-  <section class="on-navy cropped">
-    {arc_true("am-tr", dark=True)}
+  <section class="on-navy">
     <div class="wrap">
       <div class="g" style="margin-bottom:clamp(30px,3.6vw,50px)">
         <div class="c-wide rv">
@@ -1212,8 +1216,7 @@ NETWORK = f"""
     </div>
   </section>
 
-  <section class="on-navy dense cropped">
-    {arc_true("am-bl", dark=True)}
+  <section class="on-navy dense">
     <div class="wrap g">
       <div class="c-side rv">
         <div class="shead"><span class="idx">Also</span><h2 class="d3">Additional advisors and partners</h2></div>
@@ -1245,8 +1248,7 @@ CONTACT = f"""
     </div>
   </section>
 
-  <section class="band cropped">
-    {arc_true("am-bl")}
+  <section class="band">
     <div class="wrap g">
       <div class="c-side rv">
         <div class="shead"><span class="idx">Direct</span><h2 class="d3">Reach us</h2>
@@ -1297,8 +1299,7 @@ NOTFOUND = f"""
     </div>
   </section>
 
-  <section class="band cropped">
-    {arc_true("am-br")}
+  <section class="band">
     <div class="wrap g">
       <div class="c-side rv">
         <div class="shead"><span class="idx">Go to</span><h2 class="d3">Where you may have meant</h2></div>
