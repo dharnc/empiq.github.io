@@ -152,7 +152,10 @@ p:last-child{margin-bottom:0}
 .c-side{grid-column:1/-1}
 .c-main{grid-column:1/-1}
 .c-wide{grid-column:1/-1}
-@media(min-width:900px){
+.c-half-a{grid-column:1/-1}
+.c-half-b{grid-column:1/-1}
+@media(max-width:1039px){.c-half-a{margin-bottom:1.15em}}
+@media(min-width:1040px){
   .c-side{grid-column:1/4;position:sticky;top:104px;align-self:start}
   .c-main{grid-column:5/13}
   .c-wide{grid-column:1/11}
@@ -246,16 +249,16 @@ section{padding-block:clamp(58px,7vw,116px)}
 /* ---- page head ---- */
 .page-head{padding-block:clamp(52px,6.4vw,104px) clamp(34px,4vw,60px)}
 .page-head .label{margin-bottom:20px}
-.page-head h1{max-width:19ch;font-size:clamp(2.25rem,4.3vw,3.55rem);line-height:1.06}
+.page-head h1{max-width:19ch;font-size:clamp(1.95rem,4.3vw,3.55rem);line-height:1.08}
 .page-head .lede{margin-top:26px;max-width:44ch}
 
 /* ---- dark ---- */
 .on-navy{background:var(--navy);color:var(--paper)}
 .on-forest{background:var(--forest);color:var(--paper)}
-.on-navy,.on-forest p,.on-navy .sm,.on-forest .sm{color:rgba(251,250,248,.76)}
-.on-navy,.on-forest .shead .idx{color:var(--mint)}
-.on-navy,.on-forest .shead p{color:rgba(251,250,248,.66)}
-.on-navy,.on-forest .label{color:rgba(251,250,248,.5)}
+.on-navy p,.on-forest p,.on-navy .sm,.on-forest .sm{color:rgba(251,250,248,.76)}
+.on-navy .shead .idx,.on-forest .shead .idx{color:var(--mint)}
+.on-navy .shead p,.on-forest .shead p{color:rgba(251,250,248,.66)}
+.on-navy .label,.on-forest .label{color:rgba(251,250,248,.5)}
 .deepest{background:#092130;color:var(--paper)}
 .on-stone{background:var(--paper-2)}
 .on-mint{background:var(--tint-mint)}
@@ -313,10 +316,10 @@ section{padding-block:clamp(58px,7vw,116px)}
   .entry .hd{grid-column:2/6;margin-bottom:0}
   .entry .bd{grid-column:6/13}
 }
-.on-navy,.on-forest .entry{border-bottom-color:var(--rule-dark)}
-.on-navy,.on-forest .rows{border-top-color:var(--rule-dark)}
-.on-navy,.on-forest .entry .n{color:var(--mint)}
-.on-navy,.on-forest .entry .bd p{color:rgba(251,250,248,.76)}
+.on-navy .entry,.on-forest .entry{border-bottom-color:var(--rule-dark)}
+.on-navy .rows,.on-forest .rows{border-top-color:var(--rule-dark)}
+.on-navy .entry .n,.on-forest .entry .n{color:var(--mint)}
+.on-navy .entry .bd p,.on-forest .entry .bd p{color:rgba(251,250,248,.76)}
 
 /* ---- compact index list ---- */
 .idxlist{border-top:1px solid var(--rule)}
@@ -328,9 +331,9 @@ section{padding-block:clamp(58px,7vw,116px)}
   .idxlist .it h3{grid-column:1/5;margin-bottom:0}
   .idxlist .it p{grid-column:5/13}
 }
-.on-navy,.on-forest .idxlist{border-top-color:var(--rule-dark)}
-.on-navy,.on-forest .idxlist .it{border-bottom-color:var(--rule-dark)}
-.on-navy,.on-forest .idxlist .it p{color:rgba(251,250,248,.7)}
+.on-navy .idxlist,.on-forest .idxlist{border-top-color:var(--rule-dark)}
+.on-navy .idxlist .it,.on-forest .idxlist .it{border-bottom-color:var(--rule-dark)}
+.on-navy .idxlist .it p,.on-forest .idxlist .it p{color:rgba(251,250,248,.7)}
 
 /* ---- specialty lists: the enumerations set as lists, not prose ---- */
 .spec{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr;
@@ -348,8 +351,8 @@ section{padding-block:clamp(58px,7vw,116px)}
   display:flex;gap:16px;align-items:baseline}
 .ruled li::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--green);
   flex:0 0 auto;transform:translateY(-3px)}
-.on-navy,.on-forest .ruled{border-top-color:var(--rule-dark)}
-.on-navy,.on-forest .ruled li{border-bottom-color:var(--rule-dark)}
+.on-navy .ruled,.on-forest .ruled{border-top-color:var(--rule-dark)}
+.on-navy .ruled li,.on-forest .ruled li{border-bottom-color:var(--rule-dark)}
 .cols2{columns:1;column-gap:var(--col-gap)}
 @media(min-width:700px){.cols2{columns:2}}
 .cols2 li{break-inside:avoid}
@@ -402,7 +405,7 @@ section{padding-block:clamp(58px,7vw,116px)}
   width:calc((100% - min(var(--max),100%))/2 + var(--gut) + 262px);
   background:rgba(15,44,63,.06);z-index:0}
 .leader>.wrap{position:relative;z-index:1}
-@media(max-width:899px){.leader::before{width:100%;bottom:auto;height:58%}}
+@media(max-width:1039px){.leader::before{width:100%;bottom:auto;height:58%}}
 /* a cutout on a tonal panel: no frame, no box, so she sits on the page
    rather than in a window */
 .portrait{width:100%;max-width:230px;height:auto;display:block;
@@ -420,7 +423,8 @@ section{padding-block:clamp(58px,7vw,116px)}
 /* ---- rows come alive on hover ---- */
 .entry,.idxlist .it{transition:background .4s cubic-bezier(.19,1,.22,1)}
 .entry:hover,.idxlist .it:hover{background:rgba(29,158,117,.045)}
-.on-navy,.on-forest .entry:hover,.on-navy .idxlist,.on-forest .idxlist .it:hover{background:rgba(142,208,188,.07)}
+.on-navy .entry:hover,.on-forest .entry:hover,
+.on-navy .idxlist .it:hover,.on-forest .idxlist .it:hover{background:rgba(142,208,188,.07)}
 .entry .n,.entry .hd h3{transition:transform .4s cubic-bezier(.19,1,.22,1)}
 .entry:hover .n{transform:translateX(4px)}
 
@@ -455,11 +459,11 @@ section{padding-block:clamp(58px,7vw,116px)}
   transform:translate(-50%,-50%);
   width:clamp(460px,52vw,820px)}
 .arc-right{--arc-col:9}
-.on-navy,.on-forest .arcmark,.deepest .arcmark,.contact .arcmark{opacity:.26}
+.on-navy .arcmark,.on-forest .arcmark,.deepest .arcmark,.contact .arcmark{opacity:.26}
 /* the device exists to occupy dead space created by the multi-column grid.
    Below the breakpoint the grid is a single column, so the dead space - and the
    device - goes away. */
-@media(max-width:900px){.arcmark{display:none}}
+@media(max-width:1039px){.arcmark{display:none}}
 
 /* the mark draws itself on arrival, the same motion the page opened with */
 .js .arcmark .ring{stroke-dashoffset:var(--from)}
