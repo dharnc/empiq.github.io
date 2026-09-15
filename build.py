@@ -113,6 +113,8 @@ CSS = r"""
      (2.76:1 and 3.25:1). These darkened pair clear 4.5:1 on paper, stone
      and mint alike; the logo lockup keeps the true brand colours. */
   --stone-ink:#716D63; --green-ink:#177C5C;
+  /* band tints, all verified at 4.5:1 for every text colour used on them */
+  --tint-mint:#E9F3EF; --tint-rose:#F6EFF1; --forest:#123F35;
   --paper:#FBFAF8; --paper-2:#F2F0EA; --quiet:#5A6A72;
   --rule:#D9D4CB; --rule-2:#E7E3DA; --rule-dark:rgba(251,250,248,.15);
   --display:"Playfair Display",Georgia,serif;
@@ -249,12 +251,15 @@ section{padding-block:clamp(58px,7vw,116px)}
 
 /* ---- dark ---- */
 .on-navy{background:var(--navy);color:var(--paper)}
-.on-navy p,.on-navy .sm{color:rgba(251,250,248,.76)}
-.on-navy .shead .idx{color:var(--mint)}
-.on-navy .shead p{color:rgba(251,250,248,.66)}
-.on-navy .label{color:rgba(251,250,248,.5)}
+.on-forest{background:var(--forest);color:var(--paper)}
+.on-navy,.on-forest p,.on-navy .sm,.on-forest .sm{color:rgba(251,250,248,.76)}
+.on-navy,.on-forest .shead .idx{color:var(--mint)}
+.on-navy,.on-forest .shead p{color:rgba(251,250,248,.66)}
+.on-navy,.on-forest .label{color:rgba(251,250,248,.5)}
 .deepest{background:#092130;color:var(--paper)}
 .on-stone{background:var(--paper-2)}
+.on-mint{background:var(--tint-mint)}
+.on-rose{background:var(--tint-rose)}
 .deepest p{color:rgba(251,250,248,.76)}
 
 /* ---- statement ---- */
@@ -308,10 +313,10 @@ section{padding-block:clamp(58px,7vw,116px)}
   .entry .hd{grid-column:2/6;margin-bottom:0}
   .entry .bd{grid-column:6/13}
 }
-.on-navy .entry{border-bottom-color:var(--rule-dark)}
-.on-navy .rows{border-top-color:var(--rule-dark)}
-.on-navy .entry .n{color:var(--mint)}
-.on-navy .entry .bd p{color:rgba(251,250,248,.76)}
+.on-navy,.on-forest .entry{border-bottom-color:var(--rule-dark)}
+.on-navy,.on-forest .rows{border-top-color:var(--rule-dark)}
+.on-navy,.on-forest .entry .n{color:var(--mint)}
+.on-navy,.on-forest .entry .bd p{color:rgba(251,250,248,.76)}
 
 /* ---- compact index list ---- */
 .idxlist{border-top:1px solid var(--rule)}
@@ -323,9 +328,9 @@ section{padding-block:clamp(58px,7vw,116px)}
   .idxlist .it h3{grid-column:1/5;margin-bottom:0}
   .idxlist .it p{grid-column:5/13}
 }
-.on-navy .idxlist{border-top-color:var(--rule-dark)}
-.on-navy .idxlist .it{border-bottom-color:var(--rule-dark)}
-.on-navy .idxlist .it p{color:rgba(251,250,248,.7)}
+.on-navy,.on-forest .idxlist{border-top-color:var(--rule-dark)}
+.on-navy,.on-forest .idxlist .it{border-bottom-color:var(--rule-dark)}
+.on-navy,.on-forest .idxlist .it p{color:rgba(251,250,248,.7)}
 
 /* ---- specialty lists: the enumerations set as lists, not prose ---- */
 .spec{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr;
@@ -343,8 +348,8 @@ section{padding-block:clamp(58px,7vw,116px)}
   display:flex;gap:16px;align-items:baseline}
 .ruled li::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--green);
   flex:0 0 auto;transform:translateY(-3px)}
-.on-navy .ruled{border-top-color:var(--rule-dark)}
-.on-navy .ruled li{border-bottom-color:var(--rule-dark)}
+.on-navy,.on-forest .ruled{border-top-color:var(--rule-dark)}
+.on-navy,.on-forest .ruled li{border-bottom-color:var(--rule-dark)}
 .cols2{columns:1;column-gap:var(--col-gap)}
 @media(min-width:700px){.cols2{columns:2}}
 .cols2 li{break-inside:avoid}
@@ -395,7 +400,7 @@ section{padding-block:clamp(58px,7vw,116px)}
 .leader{position:relative;overflow:hidden}
 .leader::before{content:"";position:absolute;left:0;top:0;bottom:0;
   width:calc((100% - min(var(--max),100%))/2 + var(--gut) + 262px);
-  background:var(--paper-2);z-index:0}
+  background:rgba(15,44,63,.06);z-index:0}
 .leader>.wrap{position:relative;z-index:1}
 @media(max-width:899px){.leader::before{width:100%;bottom:auto;height:58%}}
 /* a cutout on a tonal panel: no frame, no box, so she sits on the page
@@ -415,7 +420,7 @@ section{padding-block:clamp(58px,7vw,116px)}
 /* ---- rows come alive on hover ---- */
 .entry,.idxlist .it{transition:background .4s cubic-bezier(.19,1,.22,1)}
 .entry:hover,.idxlist .it:hover{background:rgba(29,158,117,.045)}
-.on-navy .entry:hover,.on-navy .idxlist .it:hover{background:rgba(142,208,188,.07)}
+.on-navy,.on-forest .entry:hover,.on-navy .idxlist,.on-forest .idxlist .it:hover{background:rgba(142,208,188,.07)}
 .entry .n,.entry .hd h3{transition:transform .4s cubic-bezier(.19,1,.22,1)}
 .entry:hover .n{transform:translateX(4px)}
 
@@ -450,11 +455,23 @@ section{padding-block:clamp(58px,7vw,116px)}
   transform:translate(-50%,-50%);
   width:clamp(460px,52vw,820px)}
 .arc-right{--arc-col:9}
-.on-navy .arcmark,.deepest .arcmark,.contact .arcmark{opacity:.26}
+.on-navy,.on-forest .arcmark,.deepest .arcmark,.contact .arcmark{opacity:.26}
 /* the device exists to occupy dead space created by the multi-column grid.
    Below the breakpoint the grid is a single column, so the dead space - and the
    device - goes away. */
 @media(max-width:900px){.arcmark{display:none}}
+
+/* the mark draws itself on arrival, the same motion the page opened with */
+.js .arcmark .ring{stroke-dashoffset:var(--from)}
+.js .arcmark.in .ring{stroke-dashoffset:0;
+  transition:stroke-dashoffset 1.5s cubic-bezier(.32,0,.18,1) var(--d)}
+.js .arcmark .dot{opacity:0;transform:scale(.3);transform-origin:400px 400px}
+.js .arcmark.in .dot{opacity:1;transform:none;
+  transition:opacity .5s ease .8s,transform .7s cubic-bezier(.2,1.5,.4,1) .8s}
+@media(prefers-reduced-motion:reduce){
+  .js .arcmark .ring{stroke-dashoffset:0}
+  .js .arcmark .dot{opacity:1;transform:none}
+}
 
 /* ---- reveal ---- */
 @media(prefers-reduced-motion:no-preference){
@@ -499,8 +516,8 @@ if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&'IntersectionObserve
   var io=new IntersectionObserver(function(es){
     es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
   },{rootMargin:'0px 0px -8% 0px',threshold:.05});
-  document.querySelectorAll('.rv').forEach(function(el,i){io.observe(el)});
-}else{document.querySelectorAll('.rv').forEach(function(el){el.classList.add('in')});}
+  document.querySelectorAll('.rv, .arcmark').forEach(function(el){io.observe(el)});
+}else{document.querySelectorAll('.rv, .arcmark').forEach(function(el){el.classList.add('in')});}
 """
 
 def arcs(size, inner="#0F2C3F"):
@@ -551,12 +568,13 @@ ARC_RINGS = [(361.5, 27, 115), (244.0, 34, 113), (126.0, 38, 103)]
 def arc_true(cls, dark=False):
     cols = ["#8ED0BC", "#1D9E75", "#FBFAF8"] if dark else ["#8ED0BC", "#1D9E75", "#0F2C3F"]
     body = "".join(
-        f'<circle cx="400" cy="400" r="{r}" fill="none" stroke="{c}" stroke-width="{w}" '
-        f'stroke-linecap="round" pathLength="360" stroke-dasharray="{360-g} {g}" '
-        f'transform="rotate({g/2:.1f} 400 400)"/>'
-        for (r, w, g), c in zip(ARC_RINGS, cols))
+        f'<circle class="ring" cx="400" cy="400" r="{r}" fill="none" stroke="{c}" '
+        f'stroke-width="{w}" stroke-linecap="round" pathLength="360" '
+        f'stroke-dasharray="{360-g} {g}" transform="rotate({g/2:.1f} 400 400)" '
+        f'style="--from:{360-g};--d:{i*0.16:.2f}s"/>'
+        for i, ((r, w, g), c) in enumerate(zip(ARC_RINGS, cols)))
     return (f'<svg class="arcmark {cls}" viewBox="0 0 800 800" fill="none" aria-hidden="true">'
-            f'{body}<circle cx="400" cy="400" r="38" fill="#7A2050"/></svg>')
+            f'{body}<circle class="dot" cx="400" cy="400" r="38" fill="#7A2050"/></svg>')
 
 NAV = [("index.html","Home"),("about.html","About"),("services.html","What we do"),
        ("network.html","Our network")]
@@ -834,7 +852,7 @@ HOME = f"""
     </div>
   </section>
 
-  <section class="on-navy">
+  <section class="on-forest">
     <div class="wrap g">
       <div class="c-side rv">
         <div class="shead"><span class="idx">03 / Network</span>
@@ -854,7 +872,7 @@ HOME = f"""
     </div>
   </section>
 
-  <section class="band leader">
+  <section class="band leader on-mint">
     <div class="wrap g">
       <div class="c-side rv"><img class="portrait" src="{HEADSHOT}" alt="Lee Lynch, CEO and Founding Partner of EmpathIQ Advisors" width="212" height="253"></div>
       <div class="c-main rv" style="--i:1">
@@ -914,7 +932,7 @@ ABOUT = f"""
     </div>
   </section>
 
-  <section class="on-navy airy">
+  <section class="on-forest airy">
     <div class="wrap g">
       <div class="c-side rv"><span class="label">01 / Mission</span></div>
       <div class="c-main rv" style="--i:1">
@@ -972,7 +990,7 @@ ABOUT = f"""
     </div>
   </section>
 
-  <section class="band leader" id="lee">
+  <section class="band leader on-mint" id="lee">
     <div class="wrap g">
       <div class="c-side rv"><img class="portrait" src="{HEADSHOT}" alt="Lee Lynch, CEO and Founding Partner of EmpathIQ Advisors" width="212" height="253"></div>
       <div class="c-main rv" style="--i:1">
@@ -1081,7 +1099,7 @@ SERVICES = f"""
     </div>
   </section>
 
-  <section class="on-navy">
+  <section class="on-forest">
     <div class="wrap">
       <div class="g" style="margin-bottom:clamp(30px,3.6vw,50px)">
         <div class="c-wide rv">
@@ -1166,7 +1184,7 @@ NETWORK = f"""
     </div>
   </section>
 
-  <section class="band">
+  <section class="on-mint">
     <div class="wrap">
       <div class="g" style="margin-bottom:clamp(22px,2.6vw,34px)">
         <div class="c-wide rv"><span class="label">Communications</span></div>
@@ -1196,7 +1214,7 @@ NETWORK = f"""
     </div>
   </section>
 
-  <section class="on-stone">
+  <section class="on-rose">
     <div class="wrap">
       <div class="g" style="margin-bottom:clamp(22px,2.6vw,34px)">
         <div class="c-wide rv"><span class="label">Creative &amp; technology</span></div>
@@ -1216,7 +1234,7 @@ NETWORK = f"""
     </div>
   </section>
 
-  <section class="on-navy dense">
+  <section class="on-forest dense">
     <div class="wrap g">
       <div class="c-side rv">
         <div class="shead"><span class="idx">Also</span><h2 class="d3">Additional advisors and partners</h2></div>
@@ -1248,7 +1266,7 @@ CONTACT = f"""
     </div>
   </section>
 
-  <section class="band">
+  <section class="on-stone">
     <div class="wrap g">
       <div class="c-side rv">
         <div class="shead"><span class="idx">Direct</span><h2 class="d3">Reach us</h2>
