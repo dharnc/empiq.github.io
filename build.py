@@ -228,6 +228,11 @@ section{padding-block:clamp(58px,7vw,116px)}
 .hero{position:relative;overflow:hidden;min-height:clamp(560px,86vh,900px);
   display:flex;flex-direction:column;justify-content:center;
   padding-block:clamp(56px,8vw,110px) 0}
+.page-head{position:relative;overflow:hidden}
+.page-head>.wrap{position:relative;z-index:2}
+.head-arcs{position:absolute;top:50%;right:-14%;transform:translateY(-50%);
+  width:min(560px,52vw);opacity:.16;pointer-events:none;z-index:1}
+@media(max-width:1039px){.head-arcs{display:none}}
 .hero-arcs{position:absolute;top:46%;right:-15%;transform:translateY(-50%);
   width:min(680px,62vw);opacity:.15;pointer-events:none}
 @media(max-width:900px){.hero-arcs{right:-38%;opacity:.08}}
@@ -325,6 +330,7 @@ section{padding-block:clamp(58px,7vw,116px)}
 .idxlist{border-top:1px solid var(--rule)}
 .idxlist .it{border-bottom:1px solid var(--rule-2);padding-block:19px}
 .idxlist .it h3{grid-column:1/-1;margin-bottom:7px}
+.idxlist .it h3 a{display:inline-block;padding-block:3px}
 .idxlist .it p{grid-column:1/-1;font-size:.94rem;line-height:1.5;color:var(--quiet);
   margin:0;max-width:60ch}
 @media(min-width:900px){
@@ -366,11 +372,19 @@ section{padding-block:clamp(58px,7vw,116px)}
   display:inline-block;padding-block:2px}
 .bio a:hover{box-shadow:inset 0 -1px 0 var(--wine)}
 
-/* ---- form ---- */
-.form{display:grid;gap:22px;max-width:520px}
-.field{display:grid;gap:8px}
-.field label{font-size:.66rem;font-weight:600;letter-spacing:.17em;text-transform:uppercase;color:var(--stone-ink)}
-.field input,.field textarea,.field select{font:inherit;font-size:1rem;color:var(--navy);
+/* ---- contact list ---- */
+.contact-list{list-style:none;margin:0;padding:0;border-top:1px solid var(--rule)}
+.contact-list li{border-bottom:1px solid var(--rule);padding:clamp(18px,2.2vw,28px) 0;
+  display:grid;gap:8px}
+@media(min-width:700px){.contact-list li{grid-template-columns:130px 1fr;align-items:baseline;gap:0 24px}}
+.contact-list .label{padding-top:.35em}
+.contact-list a,.contact-list span:not(.label){font-family:var(--display);
+  font-size:clamp(1.25rem,2.1vw,1.75rem);letter-spacing:-.016em;line-height:1.25;
+  color:var(--navy);text-decoration:none}
+.contact-list a{background-image:linear-gradient(currentColor,currentColor);
+  background-size:0% 1px;background-repeat:no-repeat;background-position:0 100%;
+  padding-bottom:3px;transition:background-size .4s cubic-bezier(.19,1,.22,1)}
+.contact-list a:hover{background-size:100% 1px}
   background:transparent;border:0;border-bottom:1px solid var(--rule);padding:9px 0;width:100%;
   border-radius:0;transition:border-color .3s}
 .field textarea{min-height:110px;resize:vertical}
@@ -532,14 +546,25 @@ def arcs(size, inner="#0F2C3F"):
     <circle cx="50" cy="50" r="21" stroke="{inner}" stroke-width="4.4" pathLength="100" stroke-dasharray="72 28"/>
   </g><circle cx="50" cy="50" r="6.5" fill="#7A2050"/></svg>"""
 
-HERO_ARCS = """<svg class="hero-arcs" viewBox="0 0 100 100" fill="none" aria-hidden="true">
-  <g transform="rotate(45 50 50)" stroke-linecap="round" fill="none">
-    <circle cx="50" cy="50" r="47" stroke="#8ED0BC" stroke-width="1.3" pathLength="100" stroke-dasharray="72 28"/>
-    <circle cx="50" cy="50" r="38" stroke="#1D9E75" stroke-width="1.3" pathLength="100" stroke-dasharray="72 28"/>
-    <circle cx="50" cy="50" r="29" stroke="#0F2C3F" stroke-width="1.3" pathLength="100" stroke-dasharray="72 28"/>
-    <circle cx="50" cy="50" r="20" stroke="#0F2C3F" stroke-width="1.3" pathLength="100" stroke-dasharray="72 28"/>
-    <circle cx="50" cy="50" r="11" stroke="#0F2C3F" stroke-width="1.3" pathLength="100" stroke-dasharray="72 28"/>
-  </g><circle cx="50" cy="50" r="3.4" fill="#7A2050"/></svg>"""
+# Arc device, drawn to the mark's real geometry rather than generic concentric
+# rings: three arcs whose gaps widen outward, strokes that thicken inward, and a
+# different gap angle on each. Always cropped by a section edge so it reads as a
+# fragment of the mark, never as a small whole logo sitting in the background.
+ARC_RINGS = [(361.5, 27, 115), (244.0, 34, 113), (126.0, 38, 103)]
+
+def arc_hero(cls):
+    """Hero/page-head arcs: the mark's true radii and gap angles, drawn at
+    hairline weight so it reads as a field rather than a logo."""
+    body = "".join(
+        f'<circle cx="400" cy="400" r="{r}" stroke="{c}" stroke-width="{w/3:.1f}" '
+        f'pathLength="360" stroke-dasharray="{360-g} {g}" '
+        f'transform="rotate({g/2:.1f} 400 400)"/>'
+        for (r, w, g), c in zip(ARC_RINGS, ["#8ED0BC", "#1D9E75", "#0F2C3F"]))
+    return (f'<svg class="{cls}" viewBox="0 0 800 800" fill="none" aria-hidden="true">'
+            f'<g stroke-linecap="round" fill="none">{body}</g>'
+            f'<circle cx="400" cy="400" r="14" fill="#7A2050"/></svg>')
+
+HERO_ARCS = arc_hero("hero-arcs")
 
 def arc_field(cls, rings=5, w=1.3, dot=3.4):
     """Oversized, low-opacity arcs used to anchor sections. The mark's geometry,
@@ -563,11 +588,6 @@ def arc_field_dark(cls, rings=5, w=1.3):
             f'<g transform="rotate(45 50 50)" stroke-linecap="round" fill="none">{body}</g>'
             f'<circle cx="50" cy="50" r="3.4" fill="#8ED0BC"/></svg>')
 
-# Arc device, drawn to the mark's real geometry rather than generic concentric
-# rings: three arcs whose gaps widen outward, strokes that thicken inward, and a
-# different gap angle on each. Always cropped by a section edge so it reads as a
-# fragment of the mark, never as a small whole logo sitting in the background.
-ARC_RINGS = [(361.5, 27, 115), (244.0, 34, 113), (126.0, 38, 103)]
 
 def arc_true(cls, dark=False):
     cols = ["#8ED0BC", "#1D9E75", "#FBFAF8"] if dark else ["#8ED0BC", "#1D9E75", "#0F2C3F"]
@@ -687,7 +707,7 @@ def shell(slug, title, desc, body, schema="", noindex=False):
       </div>
       <div class="foot-col">
         <span class="label">Contact</span>
-        <a href="mailto:lee@empathiqadvisors.com">lee@empathiqadvisors.com</a>
+        <a href="mailto:info@empathiqadvisors.com">info@empathiqadvisors.com</a>
         <a href="tel:+15712148799">571-214-8799</a>
         <a href="https://www.linkedin.com/in/lee-lynch-2580476/">LinkedIn</a>
       </div>
@@ -897,6 +917,7 @@ HOME = f"""
 # ---------------------------------------------------------------- about
 ABOUT = f"""
   <section class="page-head" id="top">
+    {arc_hero("head-arcs")}
     <div class="wrap g">
       <div class="c-wide rv">
         <span class="label">Who we are</span>
@@ -1037,6 +1058,7 @@ ABOUT = f"""
 # ---------------------------------------------------------------- services
 SERVICES = f"""
   <section class="page-head" id="top">
+    {arc_hero("head-arcs")}
     <div class="wrap g">
       <div class="c-wide rv">
         <span class="label">What we do</span>
@@ -1128,6 +1150,7 @@ SERVICES = f"""
 # ---------------------------------------------------------------- network
 NETWORK = f"""
   <section class="page-head" id="top">
+    {arc_hero("head-arcs")}
     <div class="wrap g">
       <div class="c-wide rv">
         <span class="label">Our network</span>
@@ -1260,6 +1283,7 @@ NETWORK = f"""
 # ---------------------------------------------------------------- contact
 CONTACT = f"""
   <section class="page-head" id="top">
+    {arc_hero("head-arcs")}
     <div class="wrap g">
       <div class="c-wide rv">
         <span class="label">Get in touch</span>
@@ -1275,35 +1299,18 @@ CONTACT = f"""
       <div class="c-side rv">
         <div class="shead"><span class="idx">Direct</span><h2 class="d3">Reach us</h2>
         <p>Lee reads every inquiry personally and usually replies within two business days.</p></div>
-        <ul class="ruled">
-          <li><a class="link" href="mailto:lee@empathiqadvisors.com">lee@empathiqadvisors.com</a></li>
-          <li><a class="link" href="tel:+15712148799">571-214-8799 <span style="color:var(--stone)">(cell)</span></a></li>
-          <li><a class="link" href="https://www.linkedin.com/in/lee-lynch-2580476/">LinkedIn</a></li>
-          <li>Alexandria, Virginia</li>
-        </ul>
       </div>
-      <div class="c-main rv" style="--i:1">
-        <!-- Form posts nowhere yet. Wire to Formspree, Netlify Forms, or an email relay. -->
-        <form class="form" action="#" method="post">
-          <div class="field"><label for="name">Your name</label>
-            <input id="name" name="name" type="text" autocomplete="name" required></div>
-          <div class="field"><label for="org">Organization</label>
-            <input id="org" name="org" type="text" autocomplete="organization"></div>
-          <div class="field"><label for="email">Email</label>
-            <input id="email" name="email" type="email" autocomplete="email" required></div>
-          <div class="field"><label for="topic">What brings you here</label>
-            <select id="topic" name="topic">
-              <option>Advocacy &amp; alliance building</option>
-              <option>Communications &amp; campaign strategy</option>
-              <option>Access, policy &amp; regulatory communications</option>
-              <option>Capacity building</option>
-              <option>Research &amp; analytics</option>
-              <option>Something else</option>
-            </select></div>
-          <div class="field"><label for="msg">What&rsquo;s standing in the way?</label>
-            <textarea id="msg" name="message" required></textarea></div>
-          <div><button class="btn" type="submit">Send message <span>&rarr;</span></button></div>
-        </form>
+      <div class="c-main">
+        <ul class="contact-list">
+          <li class="rv"><span class="label">Email</span>
+            <a class="link" href="mailto:info@empathiqadvisors.com">info@empathiqadvisors.com</a></li>
+          <li class="rv" style="--i:1"><span class="label">Phone</span>
+            <a class="link" href="tel:+15712148799">571-214-8799</a></li>
+          <li class="rv" style="--i:2"><span class="label">LinkedIn</span>
+            <a class="link" href="https://www.linkedin.com/in/lee-lynch-2580476/">Lee Lynch</a></li>
+          <li class="rv" style="--i:3"><span class="label">Office</span>
+            <span>Alexandria, Virginia &mdash; working globally</span></li>
+        </ul>
       </div>
     </div>
   </section>
@@ -1311,6 +1318,7 @@ CONTACT = f"""
 
 NOTFOUND = f"""
   <section class="page-head" id="top">
+    {arc_hero("head-arcs")}
     <div class="wrap g">
       <div class="c-wide rv">
         <span class="label">404</span>
