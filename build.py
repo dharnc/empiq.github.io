@@ -228,7 +228,10 @@ section{padding-block:clamp(58px,7vw,116px)}
 .hero{position:relative;overflow:hidden;min-height:clamp(560px,86vh,900px);
   display:flex;flex-direction:column;justify-content:center;
   padding-block:clamp(56px,8vw,110px) 0}
-.page-head{position:relative;overflow:hidden}
+.page-head{position:relative;overflow:clip;
+  --cw:calc(min(100%, var(--max)) - 2 * var(--gut));
+  --colw:calc((var(--cw) - 11 * var(--col-gap)) / 12);
+  --edge:calc((100% - min(100%, var(--max))) / 2 + var(--gut));}
 .page-head>.wrap{position:relative;z-index:2}
 .head-arcs{position:absolute;top:50%;right:-14%;transform:translateY(-50%);
   width:min(560px,52vw);opacity:.16;pointer-events:none;z-index:1}
@@ -474,10 +477,35 @@ section{padding-block:clamp(58px,7vw,116px)}
   width:clamp(460px,52vw,820px)}
 .arc-right{--arc-col:9}
 .on-navy .arcmark,.on-forest .arcmark,.deepest .arcmark,.contact .arcmark{opacity:.26}
-/* the device exists to occupy dead space created by the multi-column grid.
-   Below the breakpoint the grid is a single column, so the dead space - and the
-   device - goes away. */
-@media(max-width:1039px){.arcmark{display:none}}
+/* On the multi-column grid the marks fill horizontal dead space. On one column
+   that space does not exist, so instead of hiding them the page head gains a
+   band beneath the copy and the mark sits in it, bleeding off the right edge.
+   Nothing sits behind text either way. */
+@media(max-width:1039px){
+  .arcmark{display:none}
+  /* the mark is sized by HEIGHT so it can never be taller than the band the
+     padding creates, and bleeds off the right edge so it still reads as a
+     fragment rather than a small logo */
+  /* One column has no dead space to fill, so rather than manufacture a band
+     and float a mark in it, the mark is cut by the section's own bottom edge.
+     Sliced at the colour change it reads as deliberate, and only its top half
+     occupies any height. */
+  .page-head{padding-bottom:clamp(62px,17vw,92px)}
+  .page-head .arcmark{display:block;height:clamp(150px,40vw,210px);width:auto;
+    left:auto;right:-13%;top:auto;bottom:clamp(-105px,-20vw,-75px);
+    transform:none;opacity:.17}
+  .page-head .mark-map{height:clamp(150px,40vw,205px);right:-6%;
+    bottom:clamp(-100px,-19vw,-72px);opacity:.22}
+  .contact{padding-bottom:clamp(68px,18vw,98px)}
+  .contact .arcmark{display:block;height:clamp(160px,42vw,220px);width:auto;
+    left:auto;right:-16%;top:auto;bottom:clamp(-110px,-21vw,-80px);
+    transform:none;opacity:.28}
+  .hero{padding-bottom:clamp(58px,16vw,86px)}
+  .hero-arcs{right:-15%;top:auto;bottom:clamp(-100px,-19vw,-72px);transform:none;
+    height:clamp(150px,40vw,205px);width:auto;opacity:.18}
+  .hero-actions{gap:12px}
+  .hero-actions .btn{width:100%;justify-content:center}
+}
 
 /* the mark draws itself on arrival, the same motion the page opened with */
 .js .arcmark .ring{stroke-dashoffset:var(--from)}
@@ -490,6 +518,36 @@ section{padding-block:clamp(58px,7vw,116px)}
   .js .arcmark .ring{stroke-dashoffset:0}
   .js .arcmark .dot{opacity:1;transform:none}
 }
+
+
+/* ---- page marks: one per content page, each built from the logo arcs ---- */
+.arcmark{--a1:#8ED0BC;--a2:#1D9E75;--a3:#0F2C3F;--a4:#7A2050}
+.on-navy .arcmark,.on-forest .arcmark,
+.deepest .arcmark,.contact .arcmark{--a3:#FBFAF8}
+.arc-edge{--arc-col:11.8;width:clamp(520px,58vw,1040px)}
+.mark-map{--arc-col:8.6;width:clamp(940px,108vw,1680px);opacity:.2}
+.on-navy .mark-map,.on-forest .mark-map,
+.deepest .mark-map,.contact .mark-map{opacity:.28}
+.js .arcmark .pt{opacity:0;transform:scale(.4);
+  transform-box:fill-box;transform-origin:center}
+.js .arcmark.in .pt{opacity:1;transform:none;
+  transition:opacity .5s ease var(--d),
+             transform .6s cubic-bezier(.2,1.5,.4,1) var(--d)}
+.js .mark-map .land{opacity:0;clip-path:inset(0 100% 0 0)}
+.js .mark-map.in .land{opacity:1;clip-path:inset(0 0 0 0);
+  transition:opacity .6s ease,clip-path 1.9s cubic-bezier(.32,0,.18,1)}
+@media(prefers-reduced-motion:reduce){
+  .js .arcmark .pt{opacity:1;transform:none}
+  .js .mark-map .land{opacity:1;clip-path:none}
+}
+/* overflow:clip trims like .cropped without making the section a scroll
+   container, which would change how the sticky .c-side rail behaves */
+.arcbox{position:relative;overflow:clip;
+  --cw:calc(min(100%, var(--max)) - 2 * var(--gut));
+  --colw:calc((var(--cw) - 11 * var(--col-gap)) / 12);
+  --edge:calc((100% - min(100%, var(--max))) / 2 + var(--gut));
+  --arc-col:3}
+.arcbox>.wrap{position:relative;z-index:2}
 
 /* ---- reveal ---- */
 @media(prefers-reduced-motion:no-preference){
@@ -917,7 +975,59 @@ HOME = f"""
 # ---------------------------------------------------------------- about
 ABOUT = f"""
   <section class="page-head" id="top">
-    {arc_hero("head-arcs")}
+    <svg class="arcmark arc-edge mark-bench" style="--arc-y:44%" viewBox="0 0 800 800" fill="none" aria-hidden="true">
+        <g>
+        <path class="ring" d="M 467.7 506.3 A 126.0 126.0 0 1 1 467.7 293.7" fill="none" stroke="var(--a3,#0F2C3F)" stroke-width="34" stroke-linecap="round" pathLength="100" stroke-dasharray="100" style="--from:100;--d:0.00s"/>
+        </g>
+        <g>
+        <circle class="pt" cx="531.1" cy="605.8" r="7.0" fill="var(--a2,#1D9E75)" style="--d:0.35s"/>
+        <circle class="pt" cx="472.1" cy="633.1" r="8.6" fill="var(--a2,#1D9E75)" style="--d:0.38s"/>
+        <circle class="pt" cx="408.0" cy="643.9" r="9.8" fill="var(--a2,#1D9E75)" style="--d:0.41s"/>
+        <circle class="pt" cx="343.3" cy="637.3" r="10.7" fill="var(--a2,#1D9E75)" style="--d:0.43s"/>
+        <circle class="pt" cx="282.6" cy="613.9" r="11.5" fill="var(--a2,#1D9E75)" style="--d:0.46s"/>
+        <circle class="pt" cx="230.3" cy="575.3" r="12.2" fill="var(--a2,#1D9E75)" style="--d:0.49s"/>
+        <circle class="pt" cx="190.0" cy="524.3" r="12.6" fill="var(--a2,#1D9E75)" style="--d:0.52s"/>
+        <circle class="pt" cx="164.7" cy="464.4" r="12.9" fill="var(--a2,#1D9E75)" style="--d:0.55s"/>
+        <circle class="pt" cx="156.0" cy="400.0" r="13.0" fill="var(--a2,#1D9E75)" style="--d:0.57s"/>
+        <circle class="pt" cx="164.7" cy="335.6" r="12.9" fill="var(--a2,#1D9E75)" style="--d:0.60s"/>
+        <circle class="pt" cx="190.0" cy="275.7" r="12.6" fill="var(--a2,#1D9E75)" style="--d:0.63s"/>
+        <circle class="pt" cx="230.3" cy="224.7" r="12.2" fill="var(--a2,#1D9E75)" style="--d:0.66s"/>
+        <circle class="pt" cx="282.6" cy="186.1" r="11.5" fill="var(--a2,#1D9E75)" style="--d:0.69s"/>
+        <circle class="pt" cx="343.3" cy="162.7" r="10.7" fill="var(--a2,#1D9E75)" style="--d:0.71s"/>
+        <circle class="pt" cx="408.0" cy="156.1" r="9.8" fill="var(--a2,#1D9E75)" style="--d:0.74s"/>
+        <circle class="pt" cx="472.1" cy="166.9" r="8.6" fill="var(--a2,#1D9E75)" style="--d:0.77s"/>
+        <circle class="pt" cx="531.1" cy="194.2" r="7.0" fill="var(--a2,#1D9E75)" style="--d:0.80s"/>
+        </g>
+        <g>
+        <circle class="pt" cx="594.2" cy="704.9" r="5.0" fill="var(--a1,#8ED0BC)" style="--d:0.90s"/>
+        <circle class="pt" cx="539.5" cy="733.5" r="6.1" fill="var(--a1,#8ED0BC)" style="--d:0.93s"/>
+        <circle class="pt" cx="480.7" cy="752.4" r="7.0" fill="var(--a1,#8ED0BC)" style="--d:0.96s"/>
+        <circle class="pt" cx="419.5" cy="761.0" r="7.7" fill="var(--a1,#8ED0BC)" style="--d:0.98s"/>
+        <circle class="pt" cx="357.8" cy="759.0" r="8.3" fill="var(--a1,#8ED0BC)" style="--d:1.01s"/>
+        <circle class="pt" cx="297.3" cy="746.6" r="8.9" fill="var(--a1,#8ED0BC)" style="--d:1.04s"/>
+        <circle class="pt" cx="239.8" cy="724.1" r="9.4" fill="var(--a1,#8ED0BC)" style="--d:1.07s"/>
+        <circle class="pt" cx="187.0" cy="692.1" r="9.9" fill="var(--a1,#8ED0BC)" style="--d:1.10s"/>
+        <circle class="pt" cx="140.4" cy="651.6" r="10.2" fill="var(--a1,#8ED0BC)" style="--d:1.12s"/>
+        <circle class="pt" cx="101.4" cy="603.7" r="10.5" fill="var(--a1,#8ED0BC)" style="--d:1.15s"/>
+        <circle class="pt" cx="71.0" cy="549.9" r="10.8" fill="var(--a1,#8ED0BC)" style="--d:1.18s"/>
+        <circle class="pt" cx="50.3" cy="491.7" r="10.9" fill="var(--a1,#8ED0BC)" style="--d:1.21s"/>
+        <circle class="pt" cx="39.8" cy="430.9" r="11.0" fill="var(--a1,#8ED0BC)" style="--d:1.24s"/>
+        <circle class="pt" cx="39.8" cy="369.1" r="11.0" fill="var(--a1,#8ED0BC)" style="--d:1.26s"/>
+        <circle class="pt" cx="50.3" cy="308.3" r="10.9" fill="var(--a1,#8ED0BC)" style="--d:1.29s"/>
+        <circle class="pt" cx="71.0" cy="250.1" r="10.8" fill="var(--a1,#8ED0BC)" style="--d:1.32s"/>
+        <circle class="pt" cx="101.4" cy="196.3" r="10.5" fill="var(--a1,#8ED0BC)" style="--d:1.35s"/>
+        <circle class="pt" cx="140.4" cy="148.4" r="10.2" fill="var(--a1,#8ED0BC)" style="--d:1.38s"/>
+        <circle class="pt" cx="187.0" cy="107.9" r="9.9" fill="var(--a1,#8ED0BC)" style="--d:1.40s"/>
+        <circle class="pt" cx="239.8" cy="75.9" r="9.4" fill="var(--a1,#8ED0BC)" style="--d:1.43s"/>
+        <circle class="pt" cx="297.3" cy="53.4" r="8.9" fill="var(--a1,#8ED0BC)" style="--d:1.46s"/>
+        <circle class="pt" cx="357.8" cy="41.0" r="8.3" fill="var(--a1,#8ED0BC)" style="--d:1.49s"/>
+        <circle class="pt" cx="419.5" cy="39.0" r="7.7" fill="var(--a1,#8ED0BC)" style="--d:1.52s"/>
+        <circle class="pt" cx="480.7" cy="47.6" r="7.0" fill="var(--a1,#8ED0BC)" style="--d:1.54s"/>
+        <circle class="pt" cx="539.5" cy="66.5" r="6.1" fill="var(--a1,#8ED0BC)" style="--d:1.57s"/>
+        <circle class="pt" cx="594.2" cy="95.1" r="5.0" fill="var(--a1,#8ED0BC)" style="--d:1.60s"/>
+        </g>
+        <circle class="dot" cx="400" cy="400" r="38" fill="var(--a4,#7A2050)"/>
+      </svg>
     <div class="wrap g">
       <div class="c-wide rv">
         <span class="label">Who we are</span>
@@ -1058,7 +1168,19 @@ ABOUT = f"""
 # ---------------------------------------------------------------- services
 SERVICES = f"""
   <section class="page-head" id="top">
-    {arc_hero("head-arcs")}
+    <svg class="arcmark arc-edge mark-stack" style="--arc-y:46%" viewBox="0 0 800 800" fill="none" aria-hidden="true">
+        <path class="ring" d="M 467.7 506.3 A 126.0 126.0 0 0 1 286.3 345.8" fill="none" stroke="var(--a3,#0F2C3F)" stroke-width="34" stroke-linecap="round" pathLength="100" stroke-dasharray="100" style="--from:100;--d:0.00s"/>
+        <circle class="pt" cx="286.3" cy="345.8" r="21.1" fill="var(--a3,#0F2C3F)" style="--d:0.85s"/>
+        <path class="ring" d="M 499.4 556.0 A 185.0 185.0 0 0 1 284.8 255.2" fill="none" stroke="var(--a2,#1D9E75)" stroke-width="30" stroke-linecap="round" pathLength="100" stroke-dasharray="100" style="--from:100;--d:0.10s"/>
+        <circle class="pt" cx="284.8" cy="255.2" r="18.6" fill="var(--a2,#1D9E75)" style="--d:0.97s"/>
+        <path class="ring" d="M 531.1 605.8 A 244.0 244.0 0 1 1 347.2 161.8" fill="none" stroke="var(--a2,#1D9E75)" stroke-width="27" stroke-linecap="round" pathLength="100" stroke-dasharray="100" style="--from:100;--d:0.20s"/>
+        <circle class="pt" cx="347.2" cy="161.8" r="16.7" fill="var(--a2,#1D9E75)" style="--d:1.09s"/>
+        <path class="ring" d="M 562.8 655.5 A 303.0 303.0 0 1 1 470.7 105.4" fill="none" stroke="var(--a1,#8ED0BC)" stroke-width="24" stroke-linecap="round" pathLength="100" stroke-dasharray="100" style="--from:100;--d:0.30s"/>
+        <circle class="pt" cx="470.7" cy="105.4" r="14.9" fill="var(--a1,#8ED0BC)" style="--d:1.21s"/>
+        <path class="ring" d="M 594.2 704.9 A 361.5 361.5 0 1 1 629.9 121.1" fill="none" stroke="var(--a1,#8ED0BC)" stroke-width="21" stroke-linecap="round" pathLength="100" stroke-dasharray="100" style="--from:100;--d:0.40s"/>
+        <circle class="pt" cx="629.9" cy="121.1" r="13.0" fill="var(--a1,#8ED0BC)" style="--d:1.33s"/>
+        <circle class="dot" cx="400" cy="400" r="38" fill="var(--a4,#7A2050)"/>
+      </svg>
     <div class="wrap g">
       <div class="c-wide rv">
         <span class="label">What we do</span>
@@ -1150,7 +1272,351 @@ SERVICES = f"""
 # ---------------------------------------------------------------- network
 NETWORK = f"""
   <section class="page-head" id="top">
-    {arc_hero("head-arcs")}
+    <svg class="arcmark mark-map" style="--arc-y:50%" viewBox="0 0 900 470" fill="none" aria-hidden="true">
+        <g class="land">
+        <g stroke="var(--a1,#8ED0BC)" stroke-width="5.6" stroke-linecap="round" fill="none" stroke-dasharray="0.01 7.42">
+        <line x1="170" y1="10" x2="169.6" y2="10"/>
+        <line x1="199" y1="10" x2="242.1" y2="10"/>
+        <line x1="264" y1="10" x2="379.9" y2="10"/>
+        <line x1="467" y1="10" x2="488.7" y2="10"/>
+        <line x1="685" y1="10" x2="684.6" y2="10"/>
+        <line x1="699" y1="10" x2="699.1" y2="10"/>
+        <line x1="130" y1="17" x2="136.9" y2="17"/>
+        <line x1="195" y1="17" x2="195.0" y2="17"/>
+        <line x1="209" y1="17" x2="238.5" y2="17"/>
+        <line x1="260" y1="17" x2="383.5" y2="17"/>
+        <line x1="478" y1="17" x2="477.9" y2="17"/>
+        <line x1="608" y1="17" x2="608.4" y2="17"/>
+        <line x1="695" y1="17" x2="702.7" y2="17"/>
+        <line x1="148" y1="25" x2="147.9" y2="25"/>
+        <line x1="206" y1="25" x2="227.6" y2="25"/>
+        <line x1="293" y1="25" x2="379.9" y2="25"/>
+        <line x1="583" y1="25" x2="583.0" y2="25"/>
+        <line x1="656" y1="25" x2="713.5" y2="25"/>
+        <line x1="122" y1="32" x2="165.9" y2="32"/>
+        <line x1="180" y1="32" x2="195.0" y2="32"/>
+        <line x1="209" y1="32" x2="238.5" y2="32"/>
+        <line x1="304" y1="32" x2="376.3" y2="32"/>
+        <line x1="572" y1="32" x2="572.2" y2="32"/>
+        <line x1="616" y1="32" x2="615.7" y2="32"/>
+        <line x1="645" y1="32" x2="760.7" y2="32"/>
+        <line x1="790" y1="32" x2="804.2" y2="32"/>
+        <line x1="112" y1="39" x2="111.6" y2="39"/>
+        <line x1="155" y1="39" x2="176.8" y2="39"/>
+        <line x1="199" y1="39" x2="198.6" y2="39"/>
+        <line x1="220" y1="39" x2="256.6" y2="39"/>
+        <line x1="300" y1="39" x2="365.4" y2="39"/>
+        <line x1="496" y1="39" x2="510.5" y2="39"/>
+        <line x1="612" y1="39" x2="836.8" y2="39"/>
+        <line x1="79" y1="46" x2="144.2" y2="46"/>
+        <line x1="166" y1="46" x2="166.0" y2="46"/>
+        <line x1="188" y1="46" x2="187.7" y2="46"/>
+        <line x1="202" y1="46" x2="209.5" y2="46"/>
+        <line x1="224" y1="46" x2="224.0" y2="46"/>
+        <line x1="253" y1="46" x2="260.2" y2="46"/>
+        <line x1="304" y1="46" x2="354.5" y2="46"/>
+        <line x1="478" y1="46" x2="535.8" y2="46"/>
+        <line x1="550" y1="46" x2="550.4" y2="46"/>
+        <line x1="565" y1="46" x2="615.6" y2="46"/>
+        <line x1="630" y1="46" x2="891.2" y2="46"/>
+        <line x1="83" y1="54" x2="213.1" y2="54"/>
+        <line x1="249" y1="54" x2="256.6" y2="54"/>
+        <line x1="271" y1="54" x2="271.2" y2="54"/>
+        <line x1="307" y1="54" x2="336.4" y2="54"/>
+        <line x1="380" y1="54" x2="394.4" y2="54"/>
+        <line x1="474" y1="54" x2="488.7" y2="54"/>
+        <line x1="503" y1="54" x2="517.7" y2="54"/>
+        <line x1="539" y1="54" x2="887.6" y2="54"/>
+        <line x1="79" y1="61" x2="202.2" y2="61"/>
+        <line x1="217" y1="61" x2="216.8" y2="61"/>
+        <line x1="231" y1="61" x2="231.3" y2="61"/>
+        <line x1="260" y1="61" x2="267.5" y2="61"/>
+        <line x1="311" y1="61" x2="325.5" y2="61"/>
+        <line x1="384" y1="61" x2="390.8" y2="61"/>
+        <line x1="463" y1="61" x2="485.1" y2="61"/>
+        <line x1="500" y1="61" x2="884.0" y2="61"/>
+        <line x1="83" y1="68" x2="198.6" y2="68"/>
+        <line x1="242" y1="68" x2="249.3" y2="68"/>
+        <line x1="315" y1="68" x2="321.9" y2="68"/>
+        <line x1="452" y1="68" x2="474.2" y2="68"/>
+        <line x1="496" y1="68" x2="829.6" y2="68"/>
+        <line x1="844" y1="68" x2="844.1" y2="68"/>
+        <line x1="859" y1="68" x2="873.1" y2="68"/>
+        <line x1="86" y1="75" x2="86.2" y2="75"/>
+        <line x1="101" y1="75" x2="195.0" y2="75"/>
+        <line x1="246" y1="75" x2="253.0" y2="75"/>
+        <line x1="456" y1="75" x2="477.8" y2="75"/>
+        <line x1="500" y1="75" x2="811.5" y2="75"/>
+        <line x1="826" y1="75" x2="826.0" y2="75"/>
+        <line x1="848" y1="75" x2="847.8" y2="75"/>
+        <line x1="104" y1="83" x2="205.8" y2="83"/>
+        <line x1="242" y1="83" x2="278.4" y2="83"/>
+        <line x1="423" y1="83" x2="430.7" y2="83"/>
+        <line x1="467" y1="83" x2="474.2" y2="83"/>
+        <line x1="503" y1="83" x2="786.1" y2="83"/>
+        <line x1="837" y1="83" x2="844.1" y2="83"/>
+        <line x1="108" y1="90" x2="224.0" y2="90"/>
+        <line x1="238" y1="90" x2="282.0" y2="90"/>
+        <line x1="427" y1="90" x2="427.1" y2="90"/>
+        <line x1="492" y1="90" x2="775.2" y2="90"/>
+        <line x1="833" y1="90" x2="840.5" y2="90"/>
+        <line x1="112" y1="97" x2="227.6" y2="97"/>
+        <line x1="242" y1="97" x2="292.9" y2="97"/>
+        <line x1="416" y1="97" x2="416.2" y2="97"/>
+        <line x1="431" y1="97" x2="437.9" y2="97"/>
+        <line x1="452" y1="97" x2="793.3" y2="97"/>
+        <line x1="837" y1="97" x2="836.9" y2="97"/>
+        <line x1="115" y1="104" x2="282.0" y2="104"/>
+        <line x1="427" y1="104" x2="427.1" y2="104"/>
+        <line x1="442" y1="104" x2="797.0" y2="104"/>
+        <line x1="206" y1="112" x2="271.1" y2="112"/>
+        <line x1="293" y1="112" x2="300.1" y2="112"/>
+        <line x1="431" y1="112" x2="786.1" y2="112"/>
+        <line x1="224" y1="119" x2="253.0" y2="119"/>
+        <line x1="267" y1="119" x2="282.0" y2="119"/>
+        <line x1="434" y1="119" x2="506.8" y2="119"/>
+        <line x1="521" y1="119" x2="521.4" y2="119"/>
+        <line x1="536" y1="119" x2="557.6" y2="119"/>
+        <line x1="572" y1="119" x2="782.4" y2="119"/>
+        <line x1="797" y1="119" x2="797.0" y2="119"/>
+        <line x1="228" y1="126" x2="242.1" y2="126"/>
+        <line x1="271" y1="126" x2="271.2" y2="126"/>
+        <line x1="438" y1="126" x2="452.4" y2="126"/>
+        <line x1="467" y1="126" x2="467.0" y2="126"/>
+        <line x1="481" y1="126" x2="503.2" y2="126"/>
+        <line x1="539" y1="126" x2="554.0" y2="126"/>
+        <line x1="568" y1="126" x2="778.8" y2="126"/>
+        <line x1="801" y1="126" x2="800.6" y2="126"/>
+        <line x1="420" y1="134" x2="441.6" y2="134"/>
+        <line x1="471" y1="134" x2="470.6" y2="134"/>
+        <line x1="485" y1="134" x2="506.8" y2="134"/>
+        <line x1="521" y1="134" x2="521.4" y2="134"/>
+        <line x1="543" y1="134" x2="557.6" y2="134"/>
+        <line x1="579" y1="134" x2="760.7" y2="134"/>
+        <line x1="416" y1="141" x2="430.7" y2="141"/>
+        <line x1="460" y1="141" x2="459.7" y2="141"/>
+        <line x1="489" y1="141" x2="488.7" y2="141"/>
+        <line x1="510" y1="141" x2="561.2" y2="141"/>
+        <line x1="576" y1="141" x2="735.3" y2="141"/>
+        <line x1="757" y1="141" x2="757.1" y2="141"/>
+        <line x1="793" y1="141" x2="793.4" y2="141"/>
+        <line x1="420" y1="148" x2="427.0" y2="148"/>
+        <line x1="471" y1="148" x2="470.6" y2="148"/>
+        <line x1="492" y1="148" x2="492.4" y2="148"/>
+        <line x1="507" y1="148" x2="557.6" y2="148"/>
+        <line x1="579" y1="148" x2="731.7" y2="148"/>
+        <line x1="761" y1="148" x2="760.7" y2="148"/>
+        <line x1="790" y1="148" x2="789.8" y2="148"/>
+        <line x1="423" y1="155" x2="423.5" y2="155"/>
+        <line x1="438" y1="155" x2="459.7" y2="155"/>
+        <line x1="496" y1="155" x2="496.0" y2="155"/>
+        <line x1="532" y1="155" x2="735.3" y2="155"/>
+        <line x1="757" y1="155" x2="757.1" y2="155"/>
+        <line x1="779" y1="155" x2="786.1" y2="155"/>
+        <line x1="420" y1="163" x2="463.3" y2="163"/>
+        <line x1="529" y1="163" x2="738.9" y2="163"/>
+        <line x1="768" y1="163" x2="768.0" y2="163"/>
+        <line x1="155" y1="170" x2="162.3" y2="170"/>
+        <line x1="416" y1="170" x2="474.2" y2="170"/>
+        <line x1="489" y1="170" x2="742.6" y2="170"/>
+        <line x1="159" y1="177" x2="180.4" y2="177"/>
+        <line x1="413" y1="177" x2="557.6" y2="177"/>
+        <line x1="572" y1="177" x2="738.9" y2="177"/>
+        <line x1="162" y1="184" x2="184.1" y2="184"/>
+        <line x1="402" y1="184" x2="517.7" y2="184"/>
+        <line x1="532" y1="184" x2="561.2" y2="184"/>
+        <line x1="576" y1="184" x2="735.3" y2="184"/>
+        <line x1="166" y1="192" x2="187.7" y2="192"/>
+        <line x1="238" y1="192" x2="238.5" y2="192"/>
+        <line x1="398" y1="192" x2="521.3" y2="192"/>
+        <line x1="536" y1="192" x2="564.9" y2="192"/>
+        <line x1="579" y1="192" x2="579.4" y2="192"/>
+        <line x1="608" y1="192" x2="731.7" y2="192"/>
+        <line x1="170" y1="199" x2="184.1" y2="199"/>
+        <line x1="235" y1="199" x2="234.9" y2="199"/>
+        <line x1="394" y1="199" x2="525.0" y2="199"/>
+        <line x1="539" y1="199" x2="583.0" y2="199"/>
+        <line x1="619" y1="199" x2="720.8" y2="199"/>
+        <line x1="743" y1="199" x2="742.6" y2="199"/>
+        <line x1="173" y1="206" x2="187.7" y2="206"/>
+        <line x1="209" y1="206" x2="209.5" y2="206"/>
+        <line x1="246" y1="206" x2="245.8" y2="206"/>
+        <line x1="398" y1="206" x2="528.6" y2="206"/>
+        <line x1="543" y1="206" x2="579.4" y2="206"/>
+        <line x1="623" y1="206" x2="651.9" y2="206"/>
+        <line x1="674" y1="206" x2="702.7" y2="206"/>
+        <line x1="177" y1="213" x2="205.8" y2="213"/>
+        <line x1="242" y1="213" x2="242.1" y2="213"/>
+        <line x1="402" y1="213" x2="532.2" y2="213"/>
+        <line x1="547" y1="213" x2="575.7" y2="213"/>
+        <line x1="627" y1="213" x2="641.0" y2="213"/>
+        <line x1="677" y1="213" x2="699.0" y2="213"/>
+        <line x1="743" y1="213" x2="742.6" y2="213"/>
+        <line x1="202" y1="221" x2="216.7" y2="221"/>
+        <line x1="398" y1="221" x2="535.8" y2="221"/>
+        <line x1="550" y1="221" x2="564.9" y2="221"/>
+        <line x1="630" y1="221" x2="637.4" y2="221"/>
+        <line x1="688" y1="221" x2="709.9" y2="221"/>
+        <line x1="213" y1="228" x2="220.3" y2="228"/>
+        <line x1="394" y1="228" x2="554.0" y2="228"/>
+        <line x1="627" y1="228" x2="633.8" y2="228"/>
+        <line x1="692" y1="228" x2="706.3" y2="228"/>
+        <line x1="750" y1="228" x2="749.9" y2="228"/>
+        <line x1="253" y1="235" x2="260.2" y2="235"/>
+        <line x1="398" y1="235" x2="543.1" y2="235"/>
+        <line x1="565" y1="235" x2="564.9" y2="235"/>
+        <line x1="630" y1="235" x2="637.4" y2="235"/>
+        <line x1="688" y1="235" x2="688.2" y2="235"/>
+        <line x1="703" y1="235" x2="709.9" y2="235"/>
+        <line x1="746" y1="235" x2="753.4" y2="235"/>
+        <line x1="235" y1="243" x2="234.9" y2="243"/>
+        <line x1="249" y1="243" x2="278.4" y2="243"/>
+        <line x1="409" y1="243" x2="561.2" y2="243"/>
+        <line x1="634" y1="243" x2="641.0" y2="243"/>
+        <line x1="735" y1="243" x2="735.4" y2="243"/>
+        <line x1="246" y1="250" x2="282.0" y2="250"/>
+        <line x1="413" y1="250" x2="557.6" y2="250"/>
+        <line x1="746" y1="250" x2="753.4" y2="250"/>
+        <line x1="242" y1="257" x2="300.1" y2="257"/>
+        <line x1="416" y1="257" x2="416.2" y2="257"/>
+        <line x1="431" y1="257" x2="430.7" y2="257"/>
+        <line x1="452" y1="257" x2="554.0" y2="257"/>
+        <line x1="692" y1="257" x2="691.8" y2="257"/>
+        <line x1="728" y1="257" x2="735.3" y2="257"/>
+        <line x1="238" y1="264" x2="303.7" y2="264"/>
+        <line x1="463" y1="264" x2="550.4" y2="264"/>
+        <line x1="688" y1="264" x2="695.4" y2="264"/>
+        <line x1="724" y1="264" x2="731.7" y2="264"/>
+        <line x1="235" y1="272" x2="307.4" y2="272"/>
+        <line x1="467" y1="272" x2="539.5" y2="272"/>
+        <line x1="692" y1="272" x2="691.8" y2="272"/>
+        <line x1="714" y1="272" x2="728.0" y2="272"/>
+        <line x1="743" y1="272" x2="749.8" y2="272"/>
+        <line x1="231" y1="279" x2="318.3" y2="279"/>
+        <line x1="463" y1="279" x2="535.8" y2="279"/>
+        <line x1="695" y1="279" x2="695.5" y2="279"/>
+        <line x1="717" y1="279" x2="724.4" y2="279"/>
+        <line x1="739" y1="279" x2="739.0" y2="279"/>
+        <line x1="775" y1="279" x2="775.2" y2="279"/>
+        <line x1="235" y1="286" x2="336.4" y2="286"/>
+        <line x1="467" y1="286" x2="532.2" y2="286"/>
+        <line x1="699" y1="286" x2="699.1" y2="286"/>
+        <line x1="728" y1="286" x2="728.1" y2="286"/>
+        <line x1="779" y1="286" x2="800.6" y2="286"/>
+        <line x1="231" y1="293" x2="340.0" y2="293"/>
+        <line x1="471" y1="293" x2="528.6" y2="293"/>
+        <line x1="790" y1="293" x2="804.2" y2="293"/>
+        <line x1="819" y1="293" x2="818.8" y2="293"/>
+        <line x1="242" y1="301" x2="343.6" y2="301"/>
+        <line x1="474" y1="301" x2="532.2" y2="301"/>
+        <line x1="721" y1="301" x2="735.3" y2="301"/>
+        <line x1="786" y1="301" x2="793.3" y2="301"/>
+        <line x1="808" y1="301" x2="807.9" y2="301"/>
+        <line x1="238" y1="308" x2="340.0" y2="308"/>
+        <line x1="471" y1="308" x2="535.8" y2="308"/>
+        <line x1="242" y1="315" x2="336.4" y2="315"/>
+        <line x1="474" y1="315" x2="532.2" y2="315"/>
+        <line x1="561" y1="315" x2="561.3" y2="315"/>
+        <line x1="772" y1="315" x2="778.8" y2="315"/>
+        <line x1="246" y1="322" x2="332.8" y2="322"/>
+        <line x1="471" y1="322" x2="535.8" y2="322"/>
+        <line x1="558" y1="322" x2="557.7" y2="322"/>
+        <line x1="753" y1="322" x2="775.2" y2="322"/>
+        <line x1="797" y1="322" x2="797.0" y2="322"/>
+        <line x1="257" y1="330" x2="336.4" y2="330"/>
+        <line x1="467" y1="330" x2="532.2" y2="330"/>
+        <line x1="554" y1="330" x2="561.2" y2="330"/>
+        <line x1="757" y1="330" x2="786.1" y2="330"/>
+        <line x1="801" y1="330" x2="800.6" y2="330"/>
+        <line x1="260" y1="337" x2="332.8" y2="337"/>
+        <line x1="471" y1="337" x2="521.3" y2="337"/>
+        <line x1="550" y1="337" x2="557.6" y2="337"/>
+        <line x1="746" y1="337" x2="804.2" y2="337"/>
+        <line x1="264" y1="344" x2="329.1" y2="344"/>
+        <line x1="474" y1="344" x2="525.0" y2="344"/>
+        <line x1="547" y1="344" x2="554.0" y2="344"/>
+        <line x1="735" y1="344" x2="807.8" y2="344"/>
+        <line x1="260" y1="352" x2="318.3" y2="352"/>
+        <line x1="478" y1="352" x2="521.3" y2="352"/>
+        <line x1="550" y1="352" x2="550.4" y2="352"/>
+        <line x1="732" y1="352" x2="818.7" y2="352"/>
+        <line x1="264" y1="359" x2="307.4" y2="359"/>
+        <line x1="474" y1="359" x2="517.7" y2="359"/>
+        <line x1="728" y1="359" x2="822.3" y2="359"/>
+        <line x1="260" y1="366" x2="311.0" y2="366"/>
+        <line x1="478" y1="366" x2="514.1" y2="366"/>
+        <line x1="732" y1="366" x2="818.7" y2="366"/>
+        <line x1="257" y1="373" x2="307.4" y2="373"/>
+        <line x1="481" y1="373" x2="510.5" y2="373"/>
+        <line x1="728" y1="373" x2="822.3" y2="373"/>
+        <line x1="260" y1="381" x2="303.7" y2="381"/>
+        <line x1="485" y1="381" x2="506.8" y2="381"/>
+        <line x1="732" y1="381" x2="753.4" y2="381"/>
+        <line x1="775" y1="381" x2="818.7" y2="381"/>
+        <line x1="257" y1="388" x2="292.9" y2="388"/>
+        <line x1="489" y1="388" x2="488.7" y2="388"/>
+        <line x1="735" y1="388" x2="735.4" y2="388"/>
+        <line x1="786" y1="388" x2="815.1" y2="388"/>
+        <line x1="253" y1="395" x2="289.2" y2="395"/>
+        <line x1="797" y1="395" x2="811.5" y2="395"/>
+        <line x1="257" y1="402" x2="285.6" y2="402"/>
+        <line x1="808" y1="402" x2="807.9" y2="402"/>
+        <line x1="880" y1="402" x2="887.6" y2="402"/>
+        <line x1="253" y1="410" x2="274.7" y2="410"/>
+        <line x1="804" y1="410" x2="811.5" y2="410"/>
+        <line x1="257" y1="417" x2="271.1" y2="417"/>
+        <line x1="808" y1="417" x2="807.9" y2="417"/>
+        <line x1="873" y1="417" x2="873.2" y2="417"/>
+        <line x1="253" y1="424" x2="260.2" y2="424"/>
+        <line x1="862" y1="424" x2="869.5" y2="424"/>
+        <line x1="249" y1="431" x2="263.9" y2="431"/>
+        <line x1="246" y1="439" x2="260.2" y2="439"/>
+        <line x1="249" y1="446" x2="256.6" y2="446"/>
+        <line x1="286" y1="446" x2="285.7" y2="446"/>
+        <line x1="253" y1="453" x2="260.2" y2="453"/>
+        </g>
+        <g stroke="var(--a2,#1D9E75)" stroke-width="6.4" stroke-linecap="round" fill="none" stroke-dasharray="0.01 7.42">
+        <line x1="32" y1="39" x2="53.5" y2="39"/>
+        <line x1="21" y1="46" x2="71.7" y2="46"/>
+        <line x1="17" y1="54" x2="75.3" y2="54"/>
+        <line x1="35" y1="61" x2="71.7" y2="61"/>
+        <line x1="17" y1="68" x2="75.3" y2="68"/>
+        <line x1="28" y1="75" x2="42.6" y2="75"/>
+        <line x1="93" y1="75" x2="93.5" y2="75"/>
+        <line x1="39" y1="83" x2="46.3" y2="83"/>
+        <line x1="21" y1="90" x2="20.9" y2="90"/>
+        <line x1="126" y1="112" x2="198.6" y2="112"/>
+        <line x1="122" y1="119" x2="216.7" y2="119"/>
+        <line x1="260" y1="119" x2="260.3" y2="119"/>
+        <line x1="126" y1="126" x2="220.3" y2="126"/>
+        <line x1="249" y1="126" x2="256.6" y2="126"/>
+        <line x1="122" y1="134" x2="253.0" y2="134"/>
+        <line x1="126" y1="141" x2="242.1" y2="141"/>
+        <line x1="130" y1="148" x2="238.5" y2="148"/>
+        <line x1="133" y1="155" x2="242.1" y2="155"/>
+        <line x1="144" y1="163" x2="231.2" y2="163"/>
+        <line x1="170" y1="170" x2="227.6" y2="170"/>
+        <line x1="188" y1="177" x2="187.7" y2="177"/>
+        <line x1="228" y1="184" x2="227.6" y2="184"/>
+        </g>
+        </g>
+        <path class="ring" d="M 241 144 Q 331 89 436 102" fill="none" stroke="var(--a2,#1D9E75)" stroke-width="6.2" stroke-linecap="round" pathLength="100" stroke-dasharray="100" style="--from:100;--d:0.30s"/>
+        <circle class="pt" cx="435.7" cy="101.6" r="8.0" fill="var(--a4,#7A2050)" style="--d:1.05s"/>
+        <path class="ring" d="M 241 144 Q 342 96 452 119" fill="none" stroke="var(--a2,#1D9E75)" stroke-width="5.4" stroke-linecap="round" pathLength="100" stroke-dasharray="100" style="--from:100;--d:0.43s"/>
+        <circle class="pt" cx="451.6" cy="119.3" r="8.0" fill="var(--a4,#7A2050)" style="--d:1.18s"/>
+        <path class="ring" d="M 241 144 Q 408 162 529 278" fill="none" stroke="var(--a1,#8ED0BC)" stroke-width="5.4" stroke-linecap="round" pathLength="100" stroke-dasharray="100" style="--from:100;--d:0.56s"/>
+        <circle class="pt" cx="529.4" cy="277.6" r="8.0" fill="var(--a4,#7A2050)" style="--d:1.31s"/>
+        <path class="ring" d="M 241 144 Q 442 94 632 178" fill="none" stroke="var(--a1,#8ED0BC)" stroke-width="6.2" stroke-linecap="round" pathLength="100" stroke-dasharray="100" style="--from:100;--d:0.69s"/>
+        <circle class="pt" cx="631.9" cy="178.0" r="8.0" fill="var(--a4,#7A2050)" style="--d:1.44s"/>
+        <path class="ring" d="M 241 144 Q 517 56 790 154" fill="none" stroke="var(--a1,#8ED0BC)" stroke-width="5.4" stroke-linecap="round" pathLength="100" stroke-dasharray="100" style="--from:100;--d:0.82s"/>
+        <circle class="pt" cx="790.3" cy="154.4" r="8.0" fill="var(--a4,#7A2050)" style="--d:1.57s"/>
+        <path class="ring" d="M 241 144 Q 315 235 318 352" fill="none" stroke="var(--a2,#1D9E75)" stroke-width="5.4" stroke-linecap="round" pathLength="100" stroke-dasharray="100" style="--from:100;--d:0.95s"/>
+        <circle class="pt" cx="317.8" cy="351.8" r="8.0" fill="var(--a4,#7A2050)" style="--d:1.70s"/>
+        <path class="ring" d="M 436 102 Q 509 176 529 278" fill="none" stroke="var(--a2,#1D9E75)" stroke-width="3.6" stroke-linecap="round" pathLength="100" stroke-dasharray="100" style="--from:100;--d:1.25s"/>
+        <path class="ring" d="M 452 119 Q 551 122 632 178" fill="none" stroke="var(--a2,#1D9E75)" stroke-width="3.6" stroke-linecap="round" pathLength="100" stroke-dasharray="100" style="--from:100;--d:1.39s"/>
+        <path class="ring" d="M 632 178 Q 708 142 790 154" fill="none" stroke="var(--a2,#1D9E75)" stroke-width="3.6" stroke-linecap="round" pathLength="100" stroke-dasharray="100" style="--from:100;--d:1.53s"/>
+        <circle class="dot" cx="240.7" cy="143.7" r="15" fill="var(--a4,#7A2050)"/>
+      </svg>
     <div class="wrap g">
       <div class="c-wide rv">
         <span class="label">Our network</span>
@@ -1283,7 +1749,15 @@ NETWORK = f"""
 # ---------------------------------------------------------------- contact
 CONTACT = f"""
   <section class="page-head" id="top">
-    {arc_hero("head-arcs")}
+    <svg class="arcmark arc-edge mark-dialog" style="--arc-y:48%" viewBox="0 0 800 800" fill="none" aria-hidden="true">
+        <path class="ring" d="M 426.2 276.8 A 126.0 126.0 0 0 1 426.2 523.2" fill="none" stroke="var(--a3,#0F2C3F)" stroke-width="38" stroke-linecap="round" pathLength="100" stroke-dasharray="100" style="--from:100;--d:0.00s"/>
+        <path class="ring" d="M 467.3 165.5 A 244.0 244.0 0 0 1 467.3 634.5" fill="none" stroke="var(--a2,#1D9E75)" stroke-width="34" stroke-linecap="round" pathLength="100" stroke-dasharray="100" style="--from:100;--d:0.10s"/>
+        <path class="ring" d="M 523.6 60.3 A 361.5 361.5 0 0 1 523.6 739.7" fill="none" stroke="var(--a1,#8ED0BC)" stroke-width="27" stroke-linecap="round" pathLength="100" stroke-dasharray="100" style="--from:100;--d:0.20s"/>
+        <circle class="dot" cx="400" cy="400" r="38" fill="var(--a4,#7A2050)"/>
+        <circle class="pt" cx="212.0" cy="400.0" r="21.0" fill="var(--a4,#7A2050)" style="--d:0.62s"/>
+        <circle class="pt" cx="132.0" cy="400.0" r="14.0" fill="var(--a4,#7A2050)" style="--d:0.50s"/>
+        <circle class="pt" cx="64.0" cy="400.0" r="9.0" fill="var(--a4,#7A2050)" style="--d:0.40s"/>
+      </svg>
     <div class="wrap g">
       <div class="c-wide rv">
         <span class="label">Get in touch</span>
@@ -1318,7 +1792,15 @@ CONTACT = f"""
 
 NOTFOUND = f"""
   <section class="page-head" id="top">
-    {arc_hero("head-arcs")}
+    <svg class="arcmark arc-edge mark-dialog" style="--arc-y:48%" viewBox="0 0 800 800" fill="none" aria-hidden="true">
+        <path class="ring" d="M 426.2 276.8 A 126.0 126.0 0 0 1 426.2 523.2" fill="none" stroke="var(--a3,#0F2C3F)" stroke-width="38" stroke-linecap="round" pathLength="100" stroke-dasharray="100" style="--from:100;--d:0.00s"/>
+        <path class="ring" d="M 467.3 165.5 A 244.0 244.0 0 0 1 467.3 634.5" fill="none" stroke="var(--a2,#1D9E75)" stroke-width="34" stroke-linecap="round" pathLength="100" stroke-dasharray="100" style="--from:100;--d:0.10s"/>
+        <path class="ring" d="M 523.6 60.3 A 361.5 361.5 0 0 1 523.6 739.7" fill="none" stroke="var(--a1,#8ED0BC)" stroke-width="27" stroke-linecap="round" pathLength="100" stroke-dasharray="100" style="--from:100;--d:0.20s"/>
+        <circle class="dot" cx="400" cy="400" r="38" fill="var(--a4,#7A2050)"/>
+        <circle class="pt" cx="212.0" cy="400.0" r="21.0" fill="var(--a4,#7A2050)" style="--d:0.62s"/>
+        <circle class="pt" cx="132.0" cy="400.0" r="14.0" fill="var(--a4,#7A2050)" style="--d:0.50s"/>
+        <circle class="pt" cx="64.0" cy="400.0" r="9.0" fill="var(--a4,#7A2050)" style="--d:0.40s"/>
+      </svg>
     <div class="wrap g">
       <div class="c-wide rv">
         <span class="label">404</span>

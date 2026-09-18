@@ -179,7 +179,10 @@ section{padding-block:clamp(58px,7vw,116px)}
 .hero{position:relative;overflow:hidden;min-height:clamp(560px,86vh,900px);
   display:flex;flex-direction:column;justify-content:center;
   padding-block:clamp(56px,8vw,110px) 0}
-.page-head{position:relative;overflow:hidden}
+.page-head{position:relative;overflow:clip;
+  --cw:calc(min(100%, var(--max)) - 2 * var(--gut));
+  --colw:calc((var(--cw) - 11 * var(--col-gap)) / 12);
+  --edge:calc((100% - min(100%, var(--max))) / 2 + var(--gut));}
 .page-head>.wrap{position:relative;z-index:2}
 .head-arcs{position:absolute;top:50%;right:-14%;transform:translateY(-50%);
   width:min(560px,52vw);opacity:.16;pointer-events:none;z-index:1}
@@ -425,10 +428,35 @@ section{padding-block:clamp(58px,7vw,116px)}
   width:clamp(460px,52vw,820px)}
 .arc-right{--arc-col:9}
 .on-navy .arcmark,.on-forest .arcmark,.deepest .arcmark,.contact .arcmark{opacity:.26}
-/* the device exists to occupy dead space created by the multi-column grid.
-   Below the breakpoint the grid is a single column, so the dead space - and the
-   device - goes away. */
-@media(max-width:1039px){.arcmark{display:none}}
+/* On the multi-column grid the marks fill horizontal dead space. On one column
+   that space does not exist, so instead of hiding them the page head gains a
+   band beneath the copy and the mark sits in it, bleeding off the right edge.
+   Nothing sits behind text either way. */
+@media(max-width:1039px){
+  .arcmark{display:none}
+  /* the mark is sized by HEIGHT so it can never be taller than the band the
+     padding creates, and bleeds off the right edge so it still reads as a
+     fragment rather than a small logo */
+  /* One column has no dead space to fill, so rather than manufacture a band
+     and float a mark in it, the mark is cut by the section's own bottom edge.
+     Sliced at the colour change it reads as deliberate, and only its top half
+     occupies any height. */
+  .page-head{padding-bottom:clamp(62px,17vw,92px)}
+  .page-head .arcmark{display:block;height:clamp(150px,40vw,210px);width:auto;
+    left:auto;right:-13%;top:auto;bottom:clamp(-105px,-20vw,-75px);
+    transform:none;opacity:.17}
+  .page-head .mark-map{height:clamp(150px,40vw,205px);right:-6%;
+    bottom:clamp(-100px,-19vw,-72px);opacity:.22}
+  .contact{padding-bottom:clamp(68px,18vw,98px)}
+  .contact .arcmark{display:block;height:clamp(160px,42vw,220px);width:auto;
+    left:auto;right:-16%;top:auto;bottom:clamp(-110px,-21vw,-80px);
+    transform:none;opacity:.28}
+  .hero{padding-bottom:clamp(58px,16vw,86px)}
+  .hero-arcs{right:-15%;top:auto;bottom:clamp(-100px,-19vw,-72px);transform:none;
+    height:clamp(150px,40vw,205px);width:auto;opacity:.18}
+  .hero-actions{gap:12px}
+  .hero-actions .btn{width:100%;justify-content:center}
+}
 
 /* the mark draws itself on arrival, the same motion the page opened with */
 .js .arcmark .ring{stroke-dashoffset:var(--from)}
@@ -441,6 +469,36 @@ section{padding-block:clamp(58px,7vw,116px)}
   .js .arcmark .ring{stroke-dashoffset:0}
   .js .arcmark .dot{opacity:1;transform:none}
 }
+
+
+/* ---- page marks: one per content page, each built from the logo arcs ---- */
+.arcmark{--a1:#8ED0BC;--a2:#1D9E75;--a3:#0F2C3F;--a4:#7A2050}
+.on-navy .arcmark,.on-forest .arcmark,
+.deepest .arcmark,.contact .arcmark{--a3:#FBFAF8}
+.arc-edge{--arc-col:11.8;width:clamp(520px,58vw,1040px)}
+.mark-map{--arc-col:8.6;width:clamp(940px,108vw,1680px);opacity:.2}
+.on-navy .mark-map,.on-forest .mark-map,
+.deepest .mark-map,.contact .mark-map{opacity:.28}
+.js .arcmark .pt{opacity:0;transform:scale(.4);
+  transform-box:fill-box;transform-origin:center}
+.js .arcmark.in .pt{opacity:1;transform:none;
+  transition:opacity .5s ease var(--d),
+             transform .6s cubic-bezier(.2,1.5,.4,1) var(--d)}
+.js .mark-map .land{opacity:0;clip-path:inset(0 100% 0 0)}
+.js .mark-map.in .land{opacity:1;clip-path:inset(0 0 0 0);
+  transition:opacity .6s ease,clip-path 1.9s cubic-bezier(.32,0,.18,1)}
+@media(prefers-reduced-motion:reduce){
+  .js .arcmark .pt{opacity:1;transform:none}
+  .js .mark-map .land{opacity:1;clip-path:none}
+}
+/* overflow:clip trims like .cropped without making the section a scroll
+   container, which would change how the sticky .c-side rail behaves */
+.arcbox{position:relative;overflow:clip;
+  --cw:calc(min(100%, var(--max)) - 2 * var(--gut));
+  --colw:calc((var(--cw) - 11 * var(--col-gap)) / 12);
+  --edge:calc((100% - min(100%, var(--max))) / 2 + var(--gut));
+  --arc-col:3}
+.arcbox>.wrap{position:relative;z-index:2}
 
 /* ---- reveal ---- */
 @media(prefers-reduced-motion:no-preference){
@@ -487,7 +545,59 @@ section{padding-block:clamp(58px,7vw,116px)}
 <main>
 
   <section class="page-head" id="top">
-    <svg class="head-arcs" viewBox="0 0 800 800" fill="none" aria-hidden="true"><g stroke-linecap="round" fill="none"><circle cx="400" cy="400" r="361.5" stroke="#8ED0BC" stroke-width="9.0" pathLength="360" stroke-dasharray="245 115" transform="rotate(57.5 400 400)"/><circle cx="400" cy="400" r="244.0" stroke="#1D9E75" stroke-width="11.3" pathLength="360" stroke-dasharray="247 113" transform="rotate(56.5 400 400)"/><circle cx="400" cy="400" r="126.0" stroke="#0F2C3F" stroke-width="12.7" pathLength="360" stroke-dasharray="257 103" transform="rotate(51.5 400 400)"/></g><circle cx="400" cy="400" r="14" fill="#7A2050"/></svg>
+    <svg class="arcmark arc-edge mark-bench" style="--arc-y:44%" viewBox="0 0 800 800" fill="none" aria-hidden="true">
+        <g>
+        <path class="ring" d="M 467.7 506.3 A 126.0 126.0 0 1 1 467.7 293.7" fill="none" stroke="var(--a3,#0F2C3F)" stroke-width="34" stroke-linecap="round" pathLength="100" stroke-dasharray="100" style="--from:100;--d:0.00s"/>
+        </g>
+        <g>
+        <circle class="pt" cx="531.1" cy="605.8" r="7.0" fill="var(--a2,#1D9E75)" style="--d:0.35s"/>
+        <circle class="pt" cx="472.1" cy="633.1" r="8.6" fill="var(--a2,#1D9E75)" style="--d:0.38s"/>
+        <circle class="pt" cx="408.0" cy="643.9" r="9.8" fill="var(--a2,#1D9E75)" style="--d:0.41s"/>
+        <circle class="pt" cx="343.3" cy="637.3" r="10.7" fill="var(--a2,#1D9E75)" style="--d:0.43s"/>
+        <circle class="pt" cx="282.6" cy="613.9" r="11.5" fill="var(--a2,#1D9E75)" style="--d:0.46s"/>
+        <circle class="pt" cx="230.3" cy="575.3" r="12.2" fill="var(--a2,#1D9E75)" style="--d:0.49s"/>
+        <circle class="pt" cx="190.0" cy="524.3" r="12.6" fill="var(--a2,#1D9E75)" style="--d:0.52s"/>
+        <circle class="pt" cx="164.7" cy="464.4" r="12.9" fill="var(--a2,#1D9E75)" style="--d:0.55s"/>
+        <circle class="pt" cx="156.0" cy="400.0" r="13.0" fill="var(--a2,#1D9E75)" style="--d:0.57s"/>
+        <circle class="pt" cx="164.7" cy="335.6" r="12.9" fill="var(--a2,#1D9E75)" style="--d:0.60s"/>
+        <circle class="pt" cx="190.0" cy="275.7" r="12.6" fill="var(--a2,#1D9E75)" style="--d:0.63s"/>
+        <circle class="pt" cx="230.3" cy="224.7" r="12.2" fill="var(--a2,#1D9E75)" style="--d:0.66s"/>
+        <circle class="pt" cx="282.6" cy="186.1" r="11.5" fill="var(--a2,#1D9E75)" style="--d:0.69s"/>
+        <circle class="pt" cx="343.3" cy="162.7" r="10.7" fill="var(--a2,#1D9E75)" style="--d:0.71s"/>
+        <circle class="pt" cx="408.0" cy="156.1" r="9.8" fill="var(--a2,#1D9E75)" style="--d:0.74s"/>
+        <circle class="pt" cx="472.1" cy="166.9" r="8.6" fill="var(--a2,#1D9E75)" style="--d:0.77s"/>
+        <circle class="pt" cx="531.1" cy="194.2" r="7.0" fill="var(--a2,#1D9E75)" style="--d:0.80s"/>
+        </g>
+        <g>
+        <circle class="pt" cx="594.2" cy="704.9" r="5.0" fill="var(--a1,#8ED0BC)" style="--d:0.90s"/>
+        <circle class="pt" cx="539.5" cy="733.5" r="6.1" fill="var(--a1,#8ED0BC)" style="--d:0.93s"/>
+        <circle class="pt" cx="480.7" cy="752.4" r="7.0" fill="var(--a1,#8ED0BC)" style="--d:0.96s"/>
+        <circle class="pt" cx="419.5" cy="761.0" r="7.7" fill="var(--a1,#8ED0BC)" style="--d:0.98s"/>
+        <circle class="pt" cx="357.8" cy="759.0" r="8.3" fill="var(--a1,#8ED0BC)" style="--d:1.01s"/>
+        <circle class="pt" cx="297.3" cy="746.6" r="8.9" fill="var(--a1,#8ED0BC)" style="--d:1.04s"/>
+        <circle class="pt" cx="239.8" cy="724.1" r="9.4" fill="var(--a1,#8ED0BC)" style="--d:1.07s"/>
+        <circle class="pt" cx="187.0" cy="692.1" r="9.9" fill="var(--a1,#8ED0BC)" style="--d:1.10s"/>
+        <circle class="pt" cx="140.4" cy="651.6" r="10.2" fill="var(--a1,#8ED0BC)" style="--d:1.12s"/>
+        <circle class="pt" cx="101.4" cy="603.7" r="10.5" fill="var(--a1,#8ED0BC)" style="--d:1.15s"/>
+        <circle class="pt" cx="71.0" cy="549.9" r="10.8" fill="var(--a1,#8ED0BC)" style="--d:1.18s"/>
+        <circle class="pt" cx="50.3" cy="491.7" r="10.9" fill="var(--a1,#8ED0BC)" style="--d:1.21s"/>
+        <circle class="pt" cx="39.8" cy="430.9" r="11.0" fill="var(--a1,#8ED0BC)" style="--d:1.24s"/>
+        <circle class="pt" cx="39.8" cy="369.1" r="11.0" fill="var(--a1,#8ED0BC)" style="--d:1.26s"/>
+        <circle class="pt" cx="50.3" cy="308.3" r="10.9" fill="var(--a1,#8ED0BC)" style="--d:1.29s"/>
+        <circle class="pt" cx="71.0" cy="250.1" r="10.8" fill="var(--a1,#8ED0BC)" style="--d:1.32s"/>
+        <circle class="pt" cx="101.4" cy="196.3" r="10.5" fill="var(--a1,#8ED0BC)" style="--d:1.35s"/>
+        <circle class="pt" cx="140.4" cy="148.4" r="10.2" fill="var(--a1,#8ED0BC)" style="--d:1.38s"/>
+        <circle class="pt" cx="187.0" cy="107.9" r="9.9" fill="var(--a1,#8ED0BC)" style="--d:1.40s"/>
+        <circle class="pt" cx="239.8" cy="75.9" r="9.4" fill="var(--a1,#8ED0BC)" style="--d:1.43s"/>
+        <circle class="pt" cx="297.3" cy="53.4" r="8.9" fill="var(--a1,#8ED0BC)" style="--d:1.46s"/>
+        <circle class="pt" cx="357.8" cy="41.0" r="8.3" fill="var(--a1,#8ED0BC)" style="--d:1.49s"/>
+        <circle class="pt" cx="419.5" cy="39.0" r="7.7" fill="var(--a1,#8ED0BC)" style="--d:1.52s"/>
+        <circle class="pt" cx="480.7" cy="47.6" r="7.0" fill="var(--a1,#8ED0BC)" style="--d:1.54s"/>
+        <circle class="pt" cx="539.5" cy="66.5" r="6.1" fill="var(--a1,#8ED0BC)" style="--d:1.57s"/>
+        <circle class="pt" cx="594.2" cy="95.1" r="5.0" fill="var(--a1,#8ED0BC)" style="--d:1.60s"/>
+        </g>
+        <circle class="dot" cx="400" cy="400" r="38" fill="var(--a4,#7A2050)"/>
+      </svg>
     <div class="wrap g">
       <div class="c-wide rv">
         <span class="label">Who we are</span>

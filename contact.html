@@ -169,7 +169,10 @@ section{padding-block:clamp(58px,7vw,116px)}
 .hero{position:relative;overflow:hidden;min-height:clamp(560px,86vh,900px);
   display:flex;flex-direction:column;justify-content:center;
   padding-block:clamp(56px,8vw,110px) 0}
-.page-head{position:relative;overflow:hidden}
+.page-head{position:relative;overflow:clip;
+  --cw:calc(min(100%, var(--max)) - 2 * var(--gut));
+  --colw:calc((var(--cw) - 11 * var(--col-gap)) / 12);
+  --edge:calc((100% - min(100%, var(--max))) / 2 + var(--gut));}
 .page-head>.wrap{position:relative;z-index:2}
 .head-arcs{position:absolute;top:50%;right:-14%;transform:translateY(-50%);
   width:min(560px,52vw);opacity:.16;pointer-events:none;z-index:1}
@@ -415,10 +418,35 @@ section{padding-block:clamp(58px,7vw,116px)}
   width:clamp(460px,52vw,820px)}
 .arc-right{--arc-col:9}
 .on-navy .arcmark,.on-forest .arcmark,.deepest .arcmark,.contact .arcmark{opacity:.26}
-/* the device exists to occupy dead space created by the multi-column grid.
-   Below the breakpoint the grid is a single column, so the dead space - and the
-   device - goes away. */
-@media(max-width:1039px){.arcmark{display:none}}
+/* On the multi-column grid the marks fill horizontal dead space. On one column
+   that space does not exist, so instead of hiding them the page head gains a
+   band beneath the copy and the mark sits in it, bleeding off the right edge.
+   Nothing sits behind text either way. */
+@media(max-width:1039px){
+  .arcmark{display:none}
+  /* the mark is sized by HEIGHT so it can never be taller than the band the
+     padding creates, and bleeds off the right edge so it still reads as a
+     fragment rather than a small logo */
+  /* One column has no dead space to fill, so rather than manufacture a band
+     and float a mark in it, the mark is cut by the section's own bottom edge.
+     Sliced at the colour change it reads as deliberate, and only its top half
+     occupies any height. */
+  .page-head{padding-bottom:clamp(62px,17vw,92px)}
+  .page-head .arcmark{display:block;height:clamp(150px,40vw,210px);width:auto;
+    left:auto;right:-13%;top:auto;bottom:clamp(-105px,-20vw,-75px);
+    transform:none;opacity:.17}
+  .page-head .mark-map{height:clamp(150px,40vw,205px);right:-6%;
+    bottom:clamp(-100px,-19vw,-72px);opacity:.22}
+  .contact{padding-bottom:clamp(68px,18vw,98px)}
+  .contact .arcmark{display:block;height:clamp(160px,42vw,220px);width:auto;
+    left:auto;right:-16%;top:auto;bottom:clamp(-110px,-21vw,-80px);
+    transform:none;opacity:.28}
+  .hero{padding-bottom:clamp(58px,16vw,86px)}
+  .hero-arcs{right:-15%;top:auto;bottom:clamp(-100px,-19vw,-72px);transform:none;
+    height:clamp(150px,40vw,205px);width:auto;opacity:.18}
+  .hero-actions{gap:12px}
+  .hero-actions .btn{width:100%;justify-content:center}
+}
 
 /* the mark draws itself on arrival, the same motion the page opened with */
 .js .arcmark .ring{stroke-dashoffset:var(--from)}
@@ -431,6 +459,36 @@ section{padding-block:clamp(58px,7vw,116px)}
   .js .arcmark .ring{stroke-dashoffset:0}
   .js .arcmark .dot{opacity:1;transform:none}
 }
+
+
+/* ---- page marks: one per content page, each built from the logo arcs ---- */
+.arcmark{--a1:#8ED0BC;--a2:#1D9E75;--a3:#0F2C3F;--a4:#7A2050}
+.on-navy .arcmark,.on-forest .arcmark,
+.deepest .arcmark,.contact .arcmark{--a3:#FBFAF8}
+.arc-edge{--arc-col:11.8;width:clamp(520px,58vw,1040px)}
+.mark-map{--arc-col:8.6;width:clamp(940px,108vw,1680px);opacity:.2}
+.on-navy .mark-map,.on-forest .mark-map,
+.deepest .mark-map,.contact .mark-map{opacity:.28}
+.js .arcmark .pt{opacity:0;transform:scale(.4);
+  transform-box:fill-box;transform-origin:center}
+.js .arcmark.in .pt{opacity:1;transform:none;
+  transition:opacity .5s ease var(--d),
+             transform .6s cubic-bezier(.2,1.5,.4,1) var(--d)}
+.js .mark-map .land{opacity:0;clip-path:inset(0 100% 0 0)}
+.js .mark-map.in .land{opacity:1;clip-path:inset(0 0 0 0);
+  transition:opacity .6s ease,clip-path 1.9s cubic-bezier(.32,0,.18,1)}
+@media(prefers-reduced-motion:reduce){
+  .js .arcmark .pt{opacity:1;transform:none}
+  .js .mark-map .land{opacity:1;clip-path:none}
+}
+/* overflow:clip trims like .cropped without making the section a scroll
+   container, which would change how the sticky .c-side rail behaves */
+.arcbox{position:relative;overflow:clip;
+  --cw:calc(min(100%, var(--max)) - 2 * var(--gut));
+  --colw:calc((var(--cw) - 11 * var(--col-gap)) / 12);
+  --edge:calc((100% - min(100%, var(--max))) / 2 + var(--gut));
+  --arc-col:3}
+.arcbox>.wrap{position:relative;z-index:2}
 
 /* ---- reveal ---- */
 @media(prefers-reduced-motion:no-preference){
@@ -477,7 +535,15 @@ section{padding-block:clamp(58px,7vw,116px)}
 <main>
 
   <section class="page-head" id="top">
-    <svg class="head-arcs" viewBox="0 0 800 800" fill="none" aria-hidden="true"><g stroke-linecap="round" fill="none"><circle cx="400" cy="400" r="361.5" stroke="#8ED0BC" stroke-width="9.0" pathLength="360" stroke-dasharray="245 115" transform="rotate(57.5 400 400)"/><circle cx="400" cy="400" r="244.0" stroke="#1D9E75" stroke-width="11.3" pathLength="360" stroke-dasharray="247 113" transform="rotate(56.5 400 400)"/><circle cx="400" cy="400" r="126.0" stroke="#0F2C3F" stroke-width="12.7" pathLength="360" stroke-dasharray="257 103" transform="rotate(51.5 400 400)"/></g><circle cx="400" cy="400" r="14" fill="#7A2050"/></svg>
+    <svg class="arcmark arc-edge mark-dialog" style="--arc-y:48%" viewBox="0 0 800 800" fill="none" aria-hidden="true">
+        <path class="ring" d="M 426.2 276.8 A 126.0 126.0 0 0 1 426.2 523.2" fill="none" stroke="var(--a3,#0F2C3F)" stroke-width="38" stroke-linecap="round" pathLength="100" stroke-dasharray="100" style="--from:100;--d:0.00s"/>
+        <path class="ring" d="M 467.3 165.5 A 244.0 244.0 0 0 1 467.3 634.5" fill="none" stroke="var(--a2,#1D9E75)" stroke-width="34" stroke-linecap="round" pathLength="100" stroke-dasharray="100" style="--from:100;--d:0.10s"/>
+        <path class="ring" d="M 523.6 60.3 A 361.5 361.5 0 0 1 523.6 739.7" fill="none" stroke="var(--a1,#8ED0BC)" stroke-width="27" stroke-linecap="round" pathLength="100" stroke-dasharray="100" style="--from:100;--d:0.20s"/>
+        <circle class="dot" cx="400" cy="400" r="38" fill="var(--a4,#7A2050)"/>
+        <circle class="pt" cx="212.0" cy="400.0" r="21.0" fill="var(--a4,#7A2050)" style="--d:0.62s"/>
+        <circle class="pt" cx="132.0" cy="400.0" r="14.0" fill="var(--a4,#7A2050)" style="--d:0.50s"/>
+        <circle class="pt" cx="64.0" cy="400.0" r="9.0" fill="var(--a4,#7A2050)" style="--d:0.40s"/>
+      </svg>
     <div class="wrap g">
       <div class="c-wide rv">
         <span class="label">Get in touch</span>
