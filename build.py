@@ -154,6 +154,7 @@ p:last-child{margin-bottom:0}
 .c-wide{grid-column:1/-1}
 .c-half-a{grid-column:1/-1}
 .c-half-b{grid-column:1/-1}
+.c-full{grid-column:1/-1}
 @media(max-width:1039px){.c-half-a{margin-bottom:1.15em}}
 @media(min-width:1040px){
   .c-side{grid-column:1/4;position:sticky;top:104px;align-self:start}
@@ -225,7 +226,11 @@ section{padding-block:clamp(58px,7vw,116px)}
 .menu-btn{display:none}
 
 /* ---- hero ---- */
-.hero{position:relative;overflow:hidden;min-height:clamp(560px,86vh,900px);
+.hero{position:relative;overflow:clip;
+  --cw:calc(min(100%, var(--max)) - 2 * var(--gut));
+  --colw:calc((var(--cw) - 11 * var(--col-gap)) / 12);
+  --edge:calc((100% - min(100%, var(--max))) / 2 + var(--gut));
+  --arc-col:13;min-height:clamp(560px,86vh,900px);
   display:flex;flex-direction:column;justify-content:center;
   padding-block:clamp(56px,8vw,110px) 0}
 .page-head{position:relative;overflow:clip;
@@ -236,8 +241,13 @@ section{padding-block:clamp(58px,7vw,116px)}
 .head-arcs{position:absolute;top:50%;right:-14%;transform:translateY(-50%);
   width:min(560px,52vw);opacity:.16;pointer-events:none;z-index:1}
 @media(max-width:1039px){.head-arcs{display:none}}
-.hero-arcs{position:absolute;top:46%;right:-15%;transform:translateY(-50%);
-  width:min(680px,62vw);opacity:.15;pointer-events:none}
+/* The bleed is a fraction of the mark's own width, not a grid position, so the
+   same proportion is cropped at every viewport. Grid anchoring holds the crop
+   only until the viewport runs wider than --max, then the mark creeps back in. */
+.hero{--hw:clamp(520px,58vw,960px)}
+.hero-arcs{position:absolute;top:50%;left:auto;
+  right:calc(var(--hw) * -0.52);transform:translateY(-50%);
+  width:var(--hw);opacity:.15;pointer-events:none}
 @media(max-width:900px){.hero-arcs{right:-38%;opacity:.08}}
 .hero .wrap{position:relative;z-index:2;width:100%}
 .hero .tagline{font-size:clamp(1rem,1.35vw,1.2rem);color:var(--stone-ink);margin:0 0 clamp(26px,3.4vw,40px)}
@@ -277,37 +287,6 @@ section{padding-block:clamp(58px,7vw,116px)}
 .statement{font-family:var(--display);font-size:clamp(1.5rem,3vw,2.5rem);line-height:1.22;
   letter-spacing:-.02em;max-width:20ch;margin:0}
 
-/* ---- ROI ---- */
-.roi-top{display:flex;flex-wrap:wrap;gap:24px 40px;align-items:baseline;
-  justify-content:space-between;margin-bottom:clamp(30px,3.6vw,50px)}
-.switch{display:flex;gap:26px}
-.switch button{font-family:var(--sans);font-size:.88rem;font-weight:500;background:none;border:0;
-  cursor:pointer;color:rgba(251,250,248,.5);padding:0 0 8px;position:relative;letter-spacing:.005em}
-.switch button::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;
-  background:currentColor;transform:scaleX(0);transform-origin:left;
-  transition:transform .45s cubic-bezier(.19,1,.22,1)}
-.switch button:hover{color:rgba(251,250,248,.85)}
-.switch button[aria-pressed="true"]{color:var(--paper)}
-.switch button[aria-pressed="true"]::after{transform:scaleX(1)}
-.stage{border-top:1px solid var(--rule-dark);padding:24px 0}
-.stage:last-of-type{border-bottom:1px solid var(--rule-dark)}
-.stage-n{grid-column:1/-1;font-size:.66rem;font-weight:600;letter-spacing:.17em;
-  color:var(--mint);margin-bottom:10px}
-.stage-name{grid-column:1/-1;font-family:var(--display);font-size:1.22rem;
-  letter-spacing:-.014em;margin-bottom:8px;display:flex;align-items:baseline;gap:14px}
-.dot{width:7px;height:7px;border-radius:50%;flex:0 0 auto;background:var(--wine);
-  transition:background .5s,box-shadow .5s}
-.roi[data-mode="with"] .dot{background:var(--mint);box-shadow:0 0 0 5px rgba(142,208,188,.16)}
-.stage-copy{grid-column:1/-1;color:rgba(251,250,248,.78);font-size:1rem;line-height:1.5;max-width:56ch}
-.stage-copy .alt{display:none}
-.roi[data-mode="with"] .stage-copy .base{display:none}
-.roi[data-mode="with"] .stage-copy .alt{display:block}
-@media(min-width:860px){
-  .stage-n{grid-column:1/2;margin-bottom:0}
-  .stage-name{grid-column:2/6;margin-bottom:0}
-  .stage-copy{grid-column:6/13}
-}
-.roi-note{margin-top:30px;font-size:.84rem;color:rgba(251,250,248,.48);max-width:66ch}
 
 /* ---- numbered service rows ---- */
 .rows{border-top:1px solid var(--rule)}
@@ -352,6 +331,10 @@ section{padding-block:clamp(58px,7vw,116px)}
   position:relative;border-bottom:1px solid var(--rule-2)}
 .spec li::before{content:"";position:absolute;left:0;top:15px;width:4px;height:4px;
   border-radius:50%;background:var(--green)}
+/* the four advisor groups were inheriting different section paddings, which
+   read as inconsistent gaps between them */
+.cluster{padding-block:clamp(48px,6vw,84px)}
+.cluster+.cluster{padding-top:0}
 .on-stone .spec li{border-bottom-color:#E3DFD6}
 
 /* ---- inline ruled list ---- */
@@ -446,10 +429,6 @@ section{padding-block:clamp(58px,7vw,116px)}
 .entry:hover .n{transform:translateX(4px)}
 
 /* ---- the stage rail reads as a timeline ---- */
-.roi-rail{position:relative}
-.roi-rail::before{content:"";position:absolute;left:0;top:0;bottom:0;width:1px;
-  background:linear-gradient(180deg,transparent,var(--mint),transparent);opacity:.35}
-@media(min-width:860px){.roi-rail::before{left:calc(8.333% + 3px)}}
 
 /* ---- portrait framed by the mark ---- */
 
@@ -500,9 +479,12 @@ section{padding-block:clamp(58px,7vw,116px)}
   .contact .arcmark{display:block;height:clamp(160px,42vw,220px);width:auto;
     left:auto;right:-16%;top:auto;bottom:clamp(-110px,-21vw,-80px);
     transform:none;opacity:.28}
-  .hero{padding-bottom:clamp(58px,16vw,86px)}
-  .hero-arcs{right:-15%;top:auto;bottom:clamp(-100px,-19vw,-72px);transform:none;
-    height:clamp(150px,40vw,205px);width:auto;opacity:.18}
+  /* The page-head marks work because the section's bottom edge is a real colour
+     change immediately after the copy. The hero has no such edge on one column -
+     the fact strip sits inside it - so the mark had nothing to be cut by and
+     landed in dead space below the facts. The hero carries the intro animation
+     and the type; it does not need it. */
+  .hero-arcs{display:none}
   .hero-actions{gap:12px}
   .hero-actions .btn{width:100%;justify-content:center}
 }
@@ -549,6 +531,11 @@ section{padding-block:clamp(58px,7vw,116px)}
   --arc-col:3}
 .arcbox>.wrap{position:relative;z-index:2}
 
+/* Full-width blocks, per the owner's "stretch across the page" notes. Declared
+   late so it beats the narrower measures set on .shead p and .sec-head p. */
+.stretch .shead,.stretch .sec-head,.stretch .shead p,.stretch .sec-head p,
+.stretch p,.stretch .statement,.stretch .lede,.stretch h2{max-width:none}
+
 /* ---- reveal ---- */
 @media(prefers-reduced-motion:no-preference){
   .js .rv{opacity:0;transform:translateY(16px);
@@ -582,11 +569,6 @@ mb.addEventListener('click',function(){var o=nav.classList.toggle('open');
   mb.setAttribute('aria-expanded',String(o));mb.textContent=o?'Close':'Menu';});
 nav.addEventListener('click',function(e){
   if(e.target.tagName==='A'&&nav.classList.contains('open'))mb.click();});
-var roi=document.getElementById('roi');
-if(roi){roi.querySelectorAll('.switch button').forEach(function(b){
-  b.addEventListener('click',function(){roi.dataset.mode=b.dataset.mode;
-    roi.querySelectorAll('.switch button').forEach(function(x){
-      x.setAttribute('aria-pressed',String(x===b));});});});}
 
 if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&'IntersectionObserver' in window){
   var io=new IntersectionObserver(function(es){
@@ -807,58 +789,21 @@ SECTORS = """<ul class="ruled cols2 rv">
         <li>Biopharma &amp; life sciences</li><li>Patient advocacy organizations</li>
         <li>Nonprofits &amp; foundations</li><li>Coalitions &amp; alliances</li>
         <li>Medical &amp; professional societies</li><li>Public health &amp; government</li>
-        <li>Health technology</li><li>Social issue campaigns</li></ul>"""
+        <li>Health technology</li><li>Social issue campaigns</li>
+        <li>Innovative companies of all kinds</li></ul>"""
 
 CONTACT_BAND = f"""
   <section class="contact airy cropped">
     {arc_true("arc-right", dark=True)}
     <div class="wrap g">
-      <div class="c-wide rv">
+      <div class="c-full rv stretch">
         <h2 class="d2">Tell us what&rsquo;s standing in the way.</h2>
         <p>A regulatory hurdle, a policy environment that hasn&rsquo;t moved, a community whose trust
-        hasn&rsquo;t been earned, a coalition that hasn&rsquo;t come together. Advocacy is very often
-        the key, and the first conversation costs nothing.</p>
+        hasn&rsquo;t been earned, a coalition that hasn&rsquo;t come together. Communications and
+        advocacy are very often the key. Whatever the issue or need, let&rsquo;s talk through it
+        and figure out the best solution.</p>
         <p style="margin-top:34px"><a class="btn" href="contact.html">Talk with us <span>&rarr;</span></a></p>
       </div>
-    </div>
-  </section>
-"""
-
-STAGES = [
- ("Pre-clinical &amp; discovery",
-  "The community is unknown. Trial design reflects internal assumptions rather than lived experience.",
-  "Patient and community insight shapes trial design, so the protocol reflects what patients can actually do."),
- ("Phase 1 / first-in-human",
-  "No channel to the patient community. Sites are chosen by default, and relationship-building becomes a late scramble.",
-  "Relationships with community organizations are already established, and credible channels to patients exist."),
- ("Phase 2&ndash;3 / pivotal trials",
-  "Enrollment gaps, distrust of the sponsor, diversity shortfalls, protocol amendments, timeline slippage.",
-  "Enrollment accelerates through trusted networks, diversity reflects real community engagement, and the protocol holds."),
- ("Regulatory submission",
-  "Patient voice is added late and advocacy letters are assembled reactively, leaving the dossier weak on real-world burden.",
-  "Patient experience data runs through the submission, and regulators encounter a prepared, coordinated, unified voice."),
- ("Access &amp; commercialization",
-  "Payer resistance, community skepticism, and limited uptake in the communities that need the therapy most.",
-  "Payer engagement is supported by organized advocacy, and uptake reflects trust that was built over time."),
-]
-
-ROI = f"""
-  <section class="deepest roi" id="roi" data-mode="without">
-    <div class="wrap roi-rail">
-      <div class="roi-top rv">
-        <h2 class="d3" style="max-width:20ch">What changes at each stage, depending on when advocacy starts</h2>
-        <div class="switch" role="group" aria-label="Compare stages with and without early advocacy">
-          <button type="button" data-mode="without" aria-pressed="true">Without early advocacy</button>
-          <button type="button" data-mode="with" aria-pressed="false">With early advocacy</button>
-        </div>
-      </div>
-""" + "\n".join(f"""      <div class="stage g rv">
-        <div class="stage-n">{i+1:02d}</div>
-        <div class="stage-name"><span class="dot" aria-hidden="true"></span>{n}</div>
-        <div class="stage-copy"><span class="base">{a}</span><span class="alt">{b}</span></div>
-      </div>""" for i,(n,a,b) in enumerate(STAGES)) + """
-      <p class="roi-note">Outcomes depend on program-specific factors. We&rsquo;re glad to share
-      illustrative examples and to define success metrics together for a specific engagement.</p>
     </div>
   </section>
 """
@@ -871,7 +816,6 @@ HOME = f"""
       <p class="tagline serif-it rv">Advocacy at the Center. Partnership as the Path.</p>
       <h1 class="d2 rv" style="--i:1">A US-based global consultancy working at the intersection of
       health and social issue advocacy, communications, policy, and research-powered insight.</h1>
-      <p class="hero-sub rv" style="--i:2">When a cause needs a voice, advocacy is the lever.</p>
       <div class="hero-actions rv" style="--i:3">
         <a class="btn" href="contact.html">Talk with us <span>&rarr;</span></a>
         <a class="btn btn-line" href="services.html">See what we do</a>
@@ -879,46 +823,68 @@ HOME = f"""
     </div>
     <div class="hero-foot">
       <div class="wrap g">
-        <div class="fact rv"><span class="n">25+ years</span><p>of founder-led advocacy and coalition-building.</p></div>
+        <div class="fact rv"><span class="n">25+ years</span><p>of founder-led communications, advocacy, and coalition-building.</p></div>
         <div class="fact rv" style="--i:1"><span class="n">A networked bench</span><p>assembled around each engagement.</p></div>
-        <div class="fact rv" style="--i:2"><span class="n">US-based, global</span><p>across disease areas and health systems.</p></div>
+        <div class="fact rv" style="--i:2"><span class="n">US-based, global</span><p>across issue, condition, and system areas.</p></div>
       </div>
     </div>
   </section>
 
   <section class="on-navy airy">
     <div class="wrap g">
-      <div class="c-half-a rv">
+      <div class="c-full rv stretch">
         <span class="label" style="margin-bottom:22px">The case for early advocacy</span>
         <h2 class="d2">Early advocacy is not a moral aspiration. It is a strategic imperative.</h2>
       </div>
-      <div class="c-half-b rv" style="--i:1">
+      <div class="c-full rv stretch" style="--i:1;margin-top:clamp(24px,3vw,38px)">
         <p class="statement">Every organization developing a product, pursuing policy change, or
         advancing a cause is ultimately trying to build a relationship with a person.</p>
-        <p style="margin-top:30px">The question is not whether to build that relationship, but whether
+        <p style="margin-top:26px">The question is not whether to build that relationship, but whether
         to start now, when it shapes everything that follows, or later, when it is harder and far more
         likely to fail.</p>
       </div>
     </div>
   </section>
 
-{ROI}
+  <!-- FEATURED PARTNERSHIP
+       Placeholder copy until the first partnership is ready to feature.
+       To publish one: change the eyebrow (currently "Coming soon") to a date or
+       partner name, swap the headline and the paragraph, and point the link at
+       the write-up. To hide the section, delete this whole <section> block. -->
+  <section class="on-stone band" id="featured">
+    <div class="wrap g">
+      <div class="c-side rv">
+        <div class="shead"><span class="idx">Featured partnership</span></div>
+      </div>
+      <div class="c-main rv" style="--i:1">
+        <p class="label" style="margin-bottom:14px">Coming soon</p>
+        <h2 class="d3" style="max-width:26ch">This is where we will feature the partnerships behind
+        the work.</h2>
+        <p style="margin-top:16px;max-width:60ch">We are putting together a rotating look at the
+        coalitions, campaigns, and alliances we help build &mdash; ours and those of the
+        organizations we work alongside. Check back shortly, or get in touch if you would like to
+        talk about a partnership of your own.</p>
+        <p style="margin-top:24px"><a class="arrow" href="contact.html">Talk with us <span>&rarr;</span></a></p>
+      </div>
+    </div>
+  </section>
+
 
   <section class="band">
     <div class="wrap g">
-      <div class="c-side rv">
-        <div class="shead"><span class="idx">01 / Services</span>
+      <div class="c-full rv stretch" style="margin-bottom:clamp(24px,3vw,40px)">
+        <div class="shead" style="max-width:none"><span class="idx">01 / Services</span>
           <h2 class="d2">How we help clients</h2>
           <p>Five areas, anchored in advocacy and amplified by partnership.</p>
         </div>
         <a class="arrow" href="services.html">See all five in detail <span>&rarr;</span></a>
       </div>
-      <div class="c-main">
+      <div class="c-full">
         <div class="idxlist" style="margin-top:6px">
-{item("Advocacy &amp; alliance building","Coalitions, campaigns, and patient engagement across disease areas and policy landscapes.")}
-{item("Communications &amp; campaign strategy","Evidence-based, empathy-driven, and built around partnership rather than a single voice.")}
-{item("Access, policy &amp; regulatory","Approvals, lifecycle strategy, access expansion, and value demonstration.")}
-{item("Capacity building","Infrastructure, capabilities, and partnerships that let organizations scale.")}
+{item("Advocacy &amp; alliance building","Coalitions, campaigns, and engagement across issue and condition areas and policy landscapes.")}
+{item("Communications &amp; campaign strategy and implementation","Narrative development and amplification, and often built around partnership rather than a single voice.")}
+{item("Access, policy &amp; regulatory","At all levels &mdash; state, federal, and global; approvals, lifecycle strategy, access expansion, and value focused.")}
+{item("Capacity building","Infrastructure, capabilities, and partnerships that let organizations start and scale.")}
 {item("Stakeholder &amp; landscape research","Research and analytics that turn stakeholder insight into decisions.")}
         </div>
       </div>
@@ -936,14 +902,14 @@ HOME = f"""
 
   <section class="on-forest">
     <div class="wrap g">
-      <div class="c-side rv">
-        <div class="shead"><span class="idx">03 / Network</span>
+      <div class="c-full rv stretch" style="margin-bottom:clamp(24px,3vw,40px)">
+        <div class="shead" style="max-width:none"><span class="idx">03 / Network</span>
           <h2 class="d2">We assemble the team the challenge demands</h2>
           <p>Senior advisors sourced around the specific problem, flexing as the engagement evolves.</p>
         </div>
-        <a class="arrow on-dark" href="network.html">Explore the advisory network <span>&rarr;</span></a>
+        <a class="arrow on-dark" href="network.html">Explore our advisory network <span>&rarr;</span></a>
       </div>
-      <div class="c-main">
+      <div class="c-full">
         <ul class="ruled cols2 rv" style="margin-top:6px">
           <li>Advocacy &amp; patient engagement</li><li>Policy</li><li>Clinical perspective</li>
           <li>Campaigns</li><li>Corporate affairs</li><li>Media</li><li>State advocacy</li>
@@ -962,7 +928,8 @@ HOME = f"""
         <h2 class="d2 founder-name">Lee Lynch</h2>
         <p class="role">CEO and Founding Partner</p>
         <div class="bio"><p style="max-width:52ch">Twenty-five years building advocacy functions,
-        coalitions, and campaigns across health and social issue work.</p></div>
+        coalitions, and campaigns to meet communications needs and across health and social
+        issue work.</p></div>
         <p style="margin-top:30px"><a class="arrow" href="about.html">Read more about Lee and the practice <span>&rarr;</span></a></p>
       </div>
     </div>
@@ -1041,28 +1008,24 @@ ABOUT = f"""
   <section class="band">
     <div class="wrap g">
       <div class="c-half-a rv">
-        <p>That conviction: advocacy &mdash; principled, strategic, and deeply human &mdash; is the
-        most powerful force available to companies and organizations that want to bring about change
-        for patients and people.</p>
-        <p>Three disciplines sit at the center of the work: advocacy, partnership, and strategic
-        communications. Each is a genuine strength on its own, and we know when to pursue them
-        separately and when to pursue them together.</p>
+        <p>That conviction: communications, advocacy, and partnership &mdash; principled, strategic,
+        and deeply human &mdash; are the most powerful forces available to companies and
+        organizations that want to bring about change for people.</p>
+        <p>Each is a genuine strength on its own, and we know when to pursue them separately and
+        when to pursue them together.</p>
         <p>When a company cannot move a market, when a policy stands between a patient and the
         treatment they need, when a clinical trial cannot find the community it is meant to serve,
-        when a cause finds itself without the voice or the allies to carry it forward, advocacy is
-        the lever.</p>
+        when a cause finds itself without the voice or the allies to carry it forward, these are
+        often the levers to pull.</p>
       </div>
       <div class="c-half-b rv" style="--i:1">
         <p>We are structured as a networked advisory practice, built to assemble the right people,
         voices, and strategies around any challenge. Time and again we have seen that organizations
         unable to achieve what they want &mdash; therapies reaching fewer patients than they should,
         coalitions whose voices go unheard, causes that stall at the edge of possible &mdash; are
-        missing a better-coordinated advocacy strategy rather than a better product.</p>
+        missing a better-coordinated advocacy and communications strategy rather than a better product.</p>
         <p>So we ask not just what a client needs, but who else needs to be at the table, what others
         need to hear from them, and how to make sure the right people are listening.</p>
-        <p>Advocacy and alliance-building are rarely one-time events. They are ongoing disciplines,
-        which is why a substantial share of our client relationships evolve into sustained, retained
-        partnerships. We are built, staffed, and resourced to be that ongoing partner.</p>
       </div>
     </div>
   </section>
@@ -1070,31 +1033,32 @@ ABOUT = f"""
   <section class="on-forest airy">
     <div class="wrap g">
       <div class="c-side rv"><span class="label">01 / Mission</span></div>
-      <div class="c-main rv" style="--i:1">
-        <p class="statement" style="max-width:26ch">To advance patient outcomes and social progress by
-        building the advocacy infrastructure that transforms human insight into intelligent action.</p>
-        <p style="margin-top:30px;max-width:56ch">The partnerships, campaigns, coalitions, and
-        strategies. Access to knowledge, treatment, care, and the systems that govern them is
-        imperative. Advocacy is how we secure it.</p>
+      <div class="c-full rv stretch" style="--i:1">
+        <p class="statement">To advance patient outcomes and social progress by
+        building the communications and advocacy infrastructure that transforms human insight into
+        intelligent action.</p>
+        <p style="margin-top:30px;max-width:56ch">Access to knowledge, treatment, care, and the systems
+        that govern them is imperative. Advocacy, partnerships, campaigns, coalitions, and
+        strategies are how we impact them.</p>
       </div>
     </div>
   </section>
 
   <section class="band">
     <div class="wrap g">
-      <div class="c-side rv">
-        <div class="shead"><span class="idx">02 / Difference</span>
+      <div class="c-full rv stretch" style="margin-bottom:clamp(24px,3vw,40px)">
+        <div class="shead" style="max-width:none"><span class="idx">02 / Difference</span>
           <h2 class="d2">What sets us apart</h2>
           <p>Eight things clients tell us they do not find elsewhere.</p>
         </div>
       </div>
-      <div class="c-main">
+      <div class="c-full">
         <div class="idxlist" style="margin-top:6px">
-{item("Deep credibility","25+ years of founder expertise across women&rsquo;s health, aging, rare disease, oncology, neuromuscular and genetic disorders, chronic care, sexual health, infectious disease, vaccines, and global health equity.")}
+{item("Deep credibility","25+ years of founder expertise across a wide array of social and health issues including women&rsquo;s health, aging, rare disease, oncology, neuromuscular and genetic disorders, chronic care, sexual health, infectious disease, vaccines, mental health, health equity, coverage issues, product quality and safety, product approvals and switches, access to care and services, misinformation, issues management, and policy campaigns.")}
 {item("Networked expertise","We source and coordinate best-in-class subject matter experts, advocates, and specialists for each engagement, giving clients exactly the team their challenge demands.")}
 {item("Empathy and intelligence","Emotional intelligence paired with analytical rigor, integrating responsible AI to amplify human judgment rather than replace it.")}
 {item("Lean and accountable","Senior leadership engages directly on accounts, and the networked model flexes capacity up or down, including multi-region, multi-workstream programs.")}
-{item("Partnership","Shared goals, transparent communication, and outcomes measured by what changes for people. We bring compliance fluency so partnerships are built right from the start and hold up under scrutiny &mdash; transparency requirements, anti-kickback considerations, conflict-of-interest disclosure &mdash; working alongside client compliance and legal teams.")}
+{item("Partnership","Shared goals, transparent communication, and outcomes measured by what changes for people. We bring compliance fluency &mdash; working alongside client compliance and legal teams &mdash; so partnerships are built right from the start and hold up under scrutiny.")}
 {item("Mission-aligned","Every engagement is passionately pursued for its potential to advance patient and social outcomes, and we measure success by what changes for people.")}
 {item("Built for ongoing partnership","Many engagements begin as a defined project and evolve into a retained relationship: sustained advocacy counsel, alliance management, and communications support as a client&rsquo;s needs change.")}
 {item("Communications built around partnership","The most effective communications often aren&rsquo;t built around a single voice. They&rsquo;re built around credible voices aligned on one message, changing minds and shaping behavior further than any organization can alone.")}
@@ -1105,22 +1069,21 @@ ABOUT = f"""
 
   <section class="on-navy">
     <div class="wrap g">
-      <div class="c-half-a rv">
+      <div class="c-full rv stretch">
         <span class="label" style="margin-bottom:22px">03 / Mindset</span>
         <h2 class="d2">Our partnership mindset</h2>
         <p style="margin-top:24px">Advocacy does not happen alone. It happens when the right voices
-        find one another, when shared purpose becomes shared strategy, and when individual commitment
+        are raised, when shared purpose becomes shared strategy, and when individual commitment
         scales into collective power.</p>
       </div>
-      <div class="c-half-b rv" style="--i:1">
+      <div class="c-full rv" style="--i:1;margin-top:clamp(22px,2.8vw,34px)">
         <p>Every partnership we engage in &mdash; whether with a global advocacy organization or a
         single patient advocate &mdash; reflects genuine respect for that partner&rsquo;s expertise,
         experience, and humanity. Partnerships are designed to create value for all parties. Trust is
         built over time, through consistent follow-through, honest communication, and shared
         commitment to mission.</p>
-        <p>This is also why so many EmpathIQ relationships last for years. Partnership is not a
-        one-time achievement. It is a sustained practice, and we are built to be the sustained
-        partner for it.</p>
+        <p>Partnership is a sustained practice. This approach is why so many EmpathIQ relationships
+        last for years.</p>
       </div>
     </div>
   </section>
@@ -1134,21 +1097,29 @@ ABOUT = f"""
         <p class="role">CEO and Founding Partner</p>
         <div class="bio">
           <p>Lee has a passion for turning collaboration into real-world change, amplifying human
-          insight through responsible technology to advance outcomes and causes. She has led advocacy
-          and alliance development functions and advocacy expert advisory boards at numerous consulting
-          firms, and has helped build and manage many initiatives, campaigns, and organizations, with
-          deep expertise in writing, strategy, and execution across advocacy and communications.</p>
-          <p>She founded EmpathIQ Advisors, formerly Lynch Advocacy Solutions, on the conviction that
-          advocacy done early and done well is the most powerful force available to organizations
-          trying to change something for patients and people.</p>
-          <p>Her support for neurodiverse individuals and causes led her to found
-          <a href="https://rocketaround.com/">Rocket Around</a>, a content provider supporting adventure
-          and life for neurodiverse families through its website, social channels, and books including
-          <em>Rocket Around Washington DC</em>, <em>Rocket Around Switzerland</em>, and
-          <em>Rocket Around Germany</em>. Lee is a travel writer, a trained professional moderator, and
-          an executive board member of the <a href="https://www.culmoreclinic.org/">Culmore Clinic</a>,
-          a nonprofit offering free, compassionate medical care, counseling, and specialty referrals to
-          uninsured adults in northern Virginia. Lee and her family live in Alexandria, VA.</p>
+          insight through responsible technology to advance outcomes and causes. In her 25+ year
+          career, she has led advocacy and alliance development functions and advocacy expert
+          advisory boards at numerous leading communications consulting firms, and has helped build
+          and manage many initiatives, campaigns, and organizations, with deep expertise in writing,
+          strategy, and execution across advocacy and communications.</p>
+          <p>She founded EmpathIQ Advisors, formerly Lynch Advocacy Solutions, on the conviction
+          that advocacy and communications done early and well are the most powerful forces
+          available to organizations trying to change something for people. One of the things Lee
+          loves to do most is to bring together an array of stakeholders to see the full picture and
+          progress client goals and health and social impact causes through partnership-focused
+          initiatives, coalitions, policy communications and public affairs, access-focused and
+          strategic communications campaigns, organizational development, and stakeholder-focused
+          research.</p>
+          <p>Lee is a trained professional moderator and an executive board member of the
+          <a href="https://www.culmoreclinic.org/">Culmore Clinic</a>, a nonprofit offering free,
+          compassionate medical care, counseling, and specialty referrals to uninsured adults in
+          northern Virginia. Her support for neurodiverse individuals and causes led her to found
+          <a href="https://rocketaround.com/">Rocket Around</a>, a content provider supporting
+          adventure and life for neurodiverse families through its website, social channels, and
+          books including <em>Rocket Around Washington DC</em>, <em>Rocket Around Switzerland</em>,
+          and <em>Rocket Around Germany</em>. Lee is also a travel writer, publishing regularly for
+          the <a href="https://gcassociation.org/healthy-travel-blog/">Healthy Travel blog</a>. Lee
+          and her family live in Alexandria, VA.</p>
         </div>
         <ul class="ruled" style="margin-top:32px">
           <li>Master&rsquo;s degree in journalism, University of South Carolina</li>
@@ -1204,35 +1175,36 @@ SERVICES = f"""
     <div class="wrap">
       <div class="rows">
 {entry("01","Advocacy &amp; alliance building","""<p>We design and manage coalitions, advocacy campaigns, and patient, consumer, and population
-          engagement initiatives across disease areas and policy landscapes. A single patient&rsquo;s
-          story can move a room. A thousand patient stories, coordinated and directed with purpose,
-          can move a legislature, a regulator, or a market.</p>
+          engagement initiatives across issue and condition areas and policy landscapes. A single
+          story can move a room. A hundred stories, coordinated and directed with purpose, can move
+          a legislature, a regulator, or a market.</p>
           <p>We create the conditions for that kind of collective power through stakeholder and
-          influencer mapping, partner identification, coalition governance, and the convening
+          influencer mapping, partner identification, coalition start-up governance, and the convening
           strategies that turn individual voices into undeniable collective impact. Because coalitions
           require continuous tending rather than a one-time build, much of this work is ongoing
           advocacy counsel and alliance management rather than a single campaign.</p>""")}
-{entry("02","Communications &amp; campaign strategy","""<p>We develop evidence-based, empathy-driven communications strategies for complex health and
+{entry("02","Communications &amp; campaign strategy and implementation","""<p>We develop, implement, and amplify communications and advocacy strategies for complex health and
           social challenges: scenario planning and issues management, mis- and disinformation
-          prediction, pre-emption and response, message development and testing, and media engagement.
-          We help clients say the most impactful things, to the right people, at the right moment.</p>
+          prediction and management, pre-emption and response, message development and testing, and
+          media engagement. We help clients say the most impactful things, to the right people, at
+          the right moment.</p>
           <p>We see communications differently, with partnership at the center rather than the
           periphery. When credible voices carry one message together, it changes minds and moves
-          behavior further than any single organization speaking alone, from coalition messaging to
-          multi-sponsor campaigns to alliance communications that hold together under real
-          organizational tension. We bring the same rigor to focused, single-organization work.</p>""")}
-{entry("03","Access, policy &amp; regulatory communications","""<p>We help advance drug and product approvals, product lifecycle strategies, access expansion
-          programs, and value demonstration campaigns, with deep experience supporting regulatory
-          submissions through patient and advocacy engagement and navigating the policy landscapes that
-          shape what patients can access and when.</p>
-          <p>In our experience, regulators respond well to organized, credible, sustained patient
-          engagement and poorly to last-minute advocacy letters. We help build that record from the
-          beginning, working alongside your regulatory affairs and legal teams. We provide advocacy and
-          communications strategy, not regulatory or legal advice.</p>""")}
-{entry("04","Capacity building &amp; organizational development","""<p>We help advocacy organizations, patient groups, and companies build the infrastructure,
-          capabilities, and partnerships they need to scale their impact: organizational creation and
-          development, bandwidth expansion, operational strategy, strategic planning, communications
-          strategy and execution, and leadership in specific competency areas and markets.</p>""")}
+          behavior further than any single organization speaking alone. We bring the same rigor to
+          focused, single-organization work.</p>""")}
+{entry("03","Access, policy &amp; regulatory communications","""<p>At all levels &mdash; state, federal, and global &mdash; we help advance drug and product
+          approvals, product lifecycle strategies, access expansion programs, and value focused
+          campaigns. We have deep experience supporting regulatory submissions through patient and
+          advocacy engagement and navigating the policy landscapes that shape what people can access
+          and when.</p>
+          <p>In our experience, increasingly, regulators respond well to organized, credible, sustained
+          stakeholder engagement and poorly to last-minute advocacy letters. We help build that
+          record from the beginning, working alongside your regulatory affairs and legal teams.</p>""")}
+{entry("04","Capacity building &amp; organizational development","""<p>We help advocacy organizations, patient groups, and companies initiate and build the
+          infrastructure, capabilities, and partnerships they need to scale their impact. To help them
+          get there, we engage with clients on organizational creation and development, bandwidth
+          expansion, operational strategy, strategic planning, communications strategy and execution,
+          and leadership in specific competency areas and markets.</p>""")}
 {entry("05","Stakeholder &amp; landscape research and analytics","""<p>We apply primary and secondary research to gather and organize stakeholder, influencer,
           and situational insight that helps clients build strategy and make key decisions. Decades of
           creating stakeholder and landscape research processes for major communications firms &mdash;
@@ -1252,7 +1224,7 @@ SERVICES = f"""
       <div class="g" style="margin-bottom:clamp(30px,3.6vw,50px)">
         <div class="c-wide rv">
           <span class="label" style="margin-bottom:20px">How we work</span>
-          <h2 class="d2" style="max-width:16ch">Five principles, in this order.</h2>
+          <h2 class="d2" style="max-width:16ch">Five principles.</h2>
         </div>
       </div>
       <div class="rows">
@@ -1260,12 +1232,11 @@ SERVICES = f"""
 {entry("02","Map the ecosystem","<p>Every health and social challenge exists within a web of partners, stakeholders, and influencers. We identify who needs to be at the table, what they care about, and how to connect them around a shared purpose.</p>")}
 {entry("03","Build the right team","<p>We draw on our global network of subject matter experts, advocacy leaders, communications specialists, and technology partners to assemble precisely the expertise each engagement requires.</p>")}
 {entry("04","Design with evidence","<p>Our strategies are evidence-based and technology-enhanced. We supplement primary data with research and analytics to surface insight, test messages, identify opportunities, and measure what matters.</p>")}
-{entry("05","Execute with accountability","<p>We measure outcomes that matter to people and to clients, with clear milestones, transparent communication, and a commitment to reporting.</p>")}
+{entry("05","Execute with accountability","<p>We measure outcomes that matter to people and clients, with clear milestones, transparent communication, and a commitment to reporting.</p>")}
       </div>
     </div>
   </section>
 
-{ROI}
 {CONTACT_BAND}
 """
 
@@ -1621,13 +1592,14 @@ NETWORK = f"""
       <div class="c-wide rv">
         <span class="label">Our network</span>
         <h1 class="d1">We assemble the team the challenge demands.</h1>
-        <p class="lede">Senior advisors across advocacy, policy, clinical practice, media, research,
-        creative, and technology. The team flexes as an engagement evolves.</p>
+        <p class="lede">Our curated bench of senior advisors spans advocacy, communications, policy,
+        clinical practice, media, research, creative, and technology, assembled around each
+        engagement. The team flexes as an engagement evolves.</p>
       </div>
     </div>
   </section>
 
-  <section class="band">
+  <section class="band cluster">
     <div class="wrap">
       <div class="g" style="margin-bottom:clamp(22px,2.6vw,34px)">
         <div class="c-wide rv"><span class="label">Advocacy &amp; policy</span></div>
@@ -1657,7 +1629,7 @@ NETWORK = f"""
     </div>
   </section>
 
-  <section class="on-stone">
+  <section class="on-stone cluster">
     <div class="wrap">
       <div class="g" style="margin-bottom:clamp(22px,2.6vw,34px)">
         <div class="c-wide rv"><span class="label">Evidence &amp; practice</span></div>
@@ -1677,7 +1649,7 @@ NETWORK = f"""
     </div>
   </section>
 
-  <section class="on-mint">
+  <section class="on-mint cluster">
     <div class="wrap">
       <div class="g" style="margin-bottom:clamp(22px,2.6vw,34px)">
         <div class="c-wide rv"><span class="label">Communications</span></div>
@@ -1691,12 +1663,12 @@ NETWORK = f"""
       <div class="entry g rv">
         <div class="n">08</div>
         <div class="hd"><h3>Corporate affairs &amp; account strategy</h3></div>
-        <div class="bd"><ul class="spec"><li>Life sciences narrative strategy</li><li>National medical society leadership</li><li>Consulting firm founders</li></ul></div>
+        <div class="bd"><ul class="spec"><li>Life sciences corporate communications leadership</li><li>National medical society leadership</li><li>Consulting firm founders</li><li>Organizational design experts</li></ul></div>
       </div>
       <div class="entry g rv">
         <div class="n">09</div>
         <div class="hd"><h3>Media</h3></div>
-        <div class="bd"><ul class="spec"><li>Independent PR consulting</li><li>Washington communications strategy</li><li>US &amp; global agency leadership</li><li>Newsroom relationships</li><li>Reputation under pressure</li></ul></div>
+        <div class="bd"><ul class="spec"><li>Washington communications strategy</li><li>US &amp; global agency leadership</li><li>Newsroom and online relationships</li><li>Reputational experts</li></ul></div>
       </div>
       <div class="entry g rv">
         <div class="n">10</div>
@@ -1707,7 +1679,7 @@ NETWORK = f"""
     </div>
   </section>
 
-  <section class="on-rose">
+  <section class="on-rose cluster">
     <div class="wrap">
       <div class="g" style="margin-bottom:clamp(22px,2.6vw,34px)">
         <div class="c-wide rv"><span class="label">Creative &amp; technology</span></div>
@@ -1730,7 +1702,7 @@ NETWORK = f"""
   <section class="on-forest dense">
     <div class="wrap g">
       <div class="c-side rv">
-        <div class="shead"><span class="idx">Also</span><h2 class="d3">Additional advisors and partners</h2></div>
+        <div class="shead"><h2 class="d3">Additional advisors and partners</h2></div>
       </div>
       <div class="c-main">
         <ul class="ruled cols2 rv" style="margin-top:6px">
@@ -1763,7 +1735,7 @@ CONTACT = f"""
         <span class="label">Get in touch</span>
         <h1 class="d1">Tell us what&rsquo;s standing in the way.</h1>
         <p class="lede">A regulatory hurdle, a policy environment that hasn&rsquo;t moved, a coalition
-        that hasn&rsquo;t come together. The first conversation costs nothing.</p>
+        that hasn&rsquo;t come together. Let&rsquo;s talk through it and figure out the best solution.</p>
       </div>
     </div>
   </section>
@@ -1771,8 +1743,10 @@ CONTACT = f"""
   <section class="on-stone">
     <div class="wrap g">
       <div class="c-side rv">
-        <div class="shead"><span class="idx">Direct</span><h2 class="d3">Reach us</h2>
-        <p>Lee reads every inquiry personally and usually replies within two business days.</p></div>
+        <div class="shead"><span class="idx">Direct</span><h2 class="d3">How to reach us</h2></div>
+      </div>
+      <div class="c-full rv stretch" style="margin-bottom:clamp(18px,2.2vw,30px)">
+        <p>Lee reads every inquiry personally and usually replies within two business days.</p>
       </div>
       <div class="c-main">
         <ul class="contact-list">

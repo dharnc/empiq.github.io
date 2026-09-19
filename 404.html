@@ -95,6 +95,7 @@ p:last-child{margin-bottom:0}
 .c-wide{grid-column:1/-1}
 .c-half-a{grid-column:1/-1}
 .c-half-b{grid-column:1/-1}
+.c-full{grid-column:1/-1}
 @media(max-width:1039px){.c-half-a{margin-bottom:1.15em}}
 @media(min-width:1040px){
   .c-side{grid-column:1/4;position:sticky;top:104px;align-self:start}
@@ -166,7 +167,11 @@ section{padding-block:clamp(58px,7vw,116px)}
 .menu-btn{display:none}
 
 /* ---- hero ---- */
-.hero{position:relative;overflow:hidden;min-height:clamp(560px,86vh,900px);
+.hero{position:relative;overflow:clip;
+  --cw:calc(min(100%, var(--max)) - 2 * var(--gut));
+  --colw:calc((var(--cw) - 11 * var(--col-gap)) / 12);
+  --edge:calc((100% - min(100%, var(--max))) / 2 + var(--gut));
+  --arc-col:13;min-height:clamp(560px,86vh,900px);
   display:flex;flex-direction:column;justify-content:center;
   padding-block:clamp(56px,8vw,110px) 0}
 .page-head{position:relative;overflow:clip;
@@ -177,8 +182,13 @@ section{padding-block:clamp(58px,7vw,116px)}
 .head-arcs{position:absolute;top:50%;right:-14%;transform:translateY(-50%);
   width:min(560px,52vw);opacity:.16;pointer-events:none;z-index:1}
 @media(max-width:1039px){.head-arcs{display:none}}
-.hero-arcs{position:absolute;top:46%;right:-15%;transform:translateY(-50%);
-  width:min(680px,62vw);opacity:.15;pointer-events:none}
+/* The bleed is a fraction of the mark's own width, not a grid position, so the
+   same proportion is cropped at every viewport. Grid anchoring holds the crop
+   only until the viewport runs wider than --max, then the mark creeps back in. */
+.hero{--hw:clamp(520px,58vw,960px)}
+.hero-arcs{position:absolute;top:50%;left:auto;
+  right:calc(var(--hw) * -0.52);transform:translateY(-50%);
+  width:var(--hw);opacity:.15;pointer-events:none}
 @media(max-width:900px){.hero-arcs{right:-38%;opacity:.08}}
 .hero .wrap{position:relative;z-index:2;width:100%}
 .hero .tagline{font-size:clamp(1rem,1.35vw,1.2rem);color:var(--stone-ink);margin:0 0 clamp(26px,3.4vw,40px)}
@@ -218,37 +228,6 @@ section{padding-block:clamp(58px,7vw,116px)}
 .statement{font-family:var(--display);font-size:clamp(1.5rem,3vw,2.5rem);line-height:1.22;
   letter-spacing:-.02em;max-width:20ch;margin:0}
 
-/* ---- ROI ---- */
-.roi-top{display:flex;flex-wrap:wrap;gap:24px 40px;align-items:baseline;
-  justify-content:space-between;margin-bottom:clamp(30px,3.6vw,50px)}
-.switch{display:flex;gap:26px}
-.switch button{font-family:var(--sans);font-size:.88rem;font-weight:500;background:none;border:0;
-  cursor:pointer;color:rgba(251,250,248,.5);padding:0 0 8px;position:relative;letter-spacing:.005em}
-.switch button::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;
-  background:currentColor;transform:scaleX(0);transform-origin:left;
-  transition:transform .45s cubic-bezier(.19,1,.22,1)}
-.switch button:hover{color:rgba(251,250,248,.85)}
-.switch button[aria-pressed="true"]{color:var(--paper)}
-.switch button[aria-pressed="true"]::after{transform:scaleX(1)}
-.stage{border-top:1px solid var(--rule-dark);padding:24px 0}
-.stage:last-of-type{border-bottom:1px solid var(--rule-dark)}
-.stage-n{grid-column:1/-1;font-size:.66rem;font-weight:600;letter-spacing:.17em;
-  color:var(--mint);margin-bottom:10px}
-.stage-name{grid-column:1/-1;font-family:var(--display);font-size:1.22rem;
-  letter-spacing:-.014em;margin-bottom:8px;display:flex;align-items:baseline;gap:14px}
-.dot{width:7px;height:7px;border-radius:50%;flex:0 0 auto;background:var(--wine);
-  transition:background .5s,box-shadow .5s}
-.roi[data-mode="with"] .dot{background:var(--mint);box-shadow:0 0 0 5px rgba(142,208,188,.16)}
-.stage-copy{grid-column:1/-1;color:rgba(251,250,248,.78);font-size:1rem;line-height:1.5;max-width:56ch}
-.stage-copy .alt{display:none}
-.roi[data-mode="with"] .stage-copy .base{display:none}
-.roi[data-mode="with"] .stage-copy .alt{display:block}
-@media(min-width:860px){
-  .stage-n{grid-column:1/2;margin-bottom:0}
-  .stage-name{grid-column:2/6;margin-bottom:0}
-  .stage-copy{grid-column:6/13}
-}
-.roi-note{margin-top:30px;font-size:.84rem;color:rgba(251,250,248,.48);max-width:66ch}
 
 /* ---- numbered service rows ---- */
 .rows{border-top:1px solid var(--rule)}
@@ -293,6 +272,10 @@ section{padding-block:clamp(58px,7vw,116px)}
   position:relative;border-bottom:1px solid var(--rule-2)}
 .spec li::before{content:"";position:absolute;left:0;top:15px;width:4px;height:4px;
   border-radius:50%;background:var(--green)}
+/* the four advisor groups were inheriting different section paddings, which
+   read as inconsistent gaps between them */
+.cluster{padding-block:clamp(48px,6vw,84px)}
+.cluster+.cluster{padding-top:0}
 .on-stone .spec li{border-bottom-color:#E3DFD6}
 
 /* ---- inline ruled list ---- */
@@ -387,10 +370,6 @@ section{padding-block:clamp(58px,7vw,116px)}
 .entry:hover .n{transform:translateX(4px)}
 
 /* ---- the stage rail reads as a timeline ---- */
-.roi-rail{position:relative}
-.roi-rail::before{content:"";position:absolute;left:0;top:0;bottom:0;width:1px;
-  background:linear-gradient(180deg,transparent,var(--mint),transparent);opacity:.35}
-@media(min-width:860px){.roi-rail::before{left:calc(8.333% + 3px)}}
 
 /* ---- portrait framed by the mark ---- */
 
@@ -441,9 +420,12 @@ section{padding-block:clamp(58px,7vw,116px)}
   .contact .arcmark{display:block;height:clamp(160px,42vw,220px);width:auto;
     left:auto;right:-16%;top:auto;bottom:clamp(-110px,-21vw,-80px);
     transform:none;opacity:.28}
-  .hero{padding-bottom:clamp(58px,16vw,86px)}
-  .hero-arcs{right:-15%;top:auto;bottom:clamp(-100px,-19vw,-72px);transform:none;
-    height:clamp(150px,40vw,205px);width:auto;opacity:.18}
+  /* The page-head marks work because the section's bottom edge is a real colour
+     change immediately after the copy. The hero has no such edge on one column -
+     the fact strip sits inside it - so the mark had nothing to be cut by and
+     landed in dead space below the facts. The hero carries the intro animation
+     and the type; it does not need it. */
+  .hero-arcs{display:none}
   .hero-actions{gap:12px}
   .hero-actions .btn{width:100%;justify-content:center}
 }
@@ -489,6 +471,11 @@ section{padding-block:clamp(58px,7vw,116px)}
   --edge:calc((100% - min(100%, var(--max))) / 2 + var(--gut));
   --arc-col:3}
 .arcbox>.wrap{position:relative;z-index:2}
+
+/* Full-width blocks, per the owner's "stretch across the page" notes. Declared
+   late so it beats the narrower measures set on .shead p and .sec-head p. */
+.stretch .shead,.stretch .sec-head,.stretch .shead p,.stretch .sec-head p,
+.stretch p,.stretch .statement,.stretch .lede,.stretch h2{max-width:none}
 
 /* ---- reveal ---- */
 @media(prefers-reduced-motion:no-preference){
@@ -616,11 +603,6 @@ mb.addEventListener('click',function(){var o=nav.classList.toggle('open');
   mb.setAttribute('aria-expanded',String(o));mb.textContent=o?'Close':'Menu';});
 nav.addEventListener('click',function(e){
   if(e.target.tagName==='A'&&nav.classList.contains('open'))mb.click();});
-var roi=document.getElementById('roi');
-if(roi){roi.querySelectorAll('.switch button').forEach(function(b){
-  b.addEventListener('click',function(){roi.dataset.mode=b.dataset.mode;
-    roi.querySelectorAll('.switch button').forEach(function(x){
-      x.setAttribute('aria-pressed',String(x===b));});});});}
 
 if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&'IntersectionObserver' in window){
   var io=new IntersectionObserver(function(es){

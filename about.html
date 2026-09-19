@@ -105,6 +105,7 @@ p:last-child{margin-bottom:0}
 .c-wide{grid-column:1/-1}
 .c-half-a{grid-column:1/-1}
 .c-half-b{grid-column:1/-1}
+.c-full{grid-column:1/-1}
 @media(max-width:1039px){.c-half-a{margin-bottom:1.15em}}
 @media(min-width:1040px){
   .c-side{grid-column:1/4;position:sticky;top:104px;align-self:start}
@@ -176,7 +177,11 @@ section{padding-block:clamp(58px,7vw,116px)}
 .menu-btn{display:none}
 
 /* ---- hero ---- */
-.hero{position:relative;overflow:hidden;min-height:clamp(560px,86vh,900px);
+.hero{position:relative;overflow:clip;
+  --cw:calc(min(100%, var(--max)) - 2 * var(--gut));
+  --colw:calc((var(--cw) - 11 * var(--col-gap)) / 12);
+  --edge:calc((100% - min(100%, var(--max))) / 2 + var(--gut));
+  --arc-col:13;min-height:clamp(560px,86vh,900px);
   display:flex;flex-direction:column;justify-content:center;
   padding-block:clamp(56px,8vw,110px) 0}
 .page-head{position:relative;overflow:clip;
@@ -187,8 +192,13 @@ section{padding-block:clamp(58px,7vw,116px)}
 .head-arcs{position:absolute;top:50%;right:-14%;transform:translateY(-50%);
   width:min(560px,52vw);opacity:.16;pointer-events:none;z-index:1}
 @media(max-width:1039px){.head-arcs{display:none}}
-.hero-arcs{position:absolute;top:46%;right:-15%;transform:translateY(-50%);
-  width:min(680px,62vw);opacity:.15;pointer-events:none}
+/* The bleed is a fraction of the mark's own width, not a grid position, so the
+   same proportion is cropped at every viewport. Grid anchoring holds the crop
+   only until the viewport runs wider than --max, then the mark creeps back in. */
+.hero{--hw:clamp(520px,58vw,960px)}
+.hero-arcs{position:absolute;top:50%;left:auto;
+  right:calc(var(--hw) * -0.52);transform:translateY(-50%);
+  width:var(--hw);opacity:.15;pointer-events:none}
 @media(max-width:900px){.hero-arcs{right:-38%;opacity:.08}}
 .hero .wrap{position:relative;z-index:2;width:100%}
 .hero .tagline{font-size:clamp(1rem,1.35vw,1.2rem);color:var(--stone-ink);margin:0 0 clamp(26px,3.4vw,40px)}
@@ -228,37 +238,6 @@ section{padding-block:clamp(58px,7vw,116px)}
 .statement{font-family:var(--display);font-size:clamp(1.5rem,3vw,2.5rem);line-height:1.22;
   letter-spacing:-.02em;max-width:20ch;margin:0}
 
-/* ---- ROI ---- */
-.roi-top{display:flex;flex-wrap:wrap;gap:24px 40px;align-items:baseline;
-  justify-content:space-between;margin-bottom:clamp(30px,3.6vw,50px)}
-.switch{display:flex;gap:26px}
-.switch button{font-family:var(--sans);font-size:.88rem;font-weight:500;background:none;border:0;
-  cursor:pointer;color:rgba(251,250,248,.5);padding:0 0 8px;position:relative;letter-spacing:.005em}
-.switch button::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;
-  background:currentColor;transform:scaleX(0);transform-origin:left;
-  transition:transform .45s cubic-bezier(.19,1,.22,1)}
-.switch button:hover{color:rgba(251,250,248,.85)}
-.switch button[aria-pressed="true"]{color:var(--paper)}
-.switch button[aria-pressed="true"]::after{transform:scaleX(1)}
-.stage{border-top:1px solid var(--rule-dark);padding:24px 0}
-.stage:last-of-type{border-bottom:1px solid var(--rule-dark)}
-.stage-n{grid-column:1/-1;font-size:.66rem;font-weight:600;letter-spacing:.17em;
-  color:var(--mint);margin-bottom:10px}
-.stage-name{grid-column:1/-1;font-family:var(--display);font-size:1.22rem;
-  letter-spacing:-.014em;margin-bottom:8px;display:flex;align-items:baseline;gap:14px}
-.dot{width:7px;height:7px;border-radius:50%;flex:0 0 auto;background:var(--wine);
-  transition:background .5s,box-shadow .5s}
-.roi[data-mode="with"] .dot{background:var(--mint);box-shadow:0 0 0 5px rgba(142,208,188,.16)}
-.stage-copy{grid-column:1/-1;color:rgba(251,250,248,.78);font-size:1rem;line-height:1.5;max-width:56ch}
-.stage-copy .alt{display:none}
-.roi[data-mode="with"] .stage-copy .base{display:none}
-.roi[data-mode="with"] .stage-copy .alt{display:block}
-@media(min-width:860px){
-  .stage-n{grid-column:1/2;margin-bottom:0}
-  .stage-name{grid-column:2/6;margin-bottom:0}
-  .stage-copy{grid-column:6/13}
-}
-.roi-note{margin-top:30px;font-size:.84rem;color:rgba(251,250,248,.48);max-width:66ch}
 
 /* ---- numbered service rows ---- */
 .rows{border-top:1px solid var(--rule)}
@@ -303,6 +282,10 @@ section{padding-block:clamp(58px,7vw,116px)}
   position:relative;border-bottom:1px solid var(--rule-2)}
 .spec li::before{content:"";position:absolute;left:0;top:15px;width:4px;height:4px;
   border-radius:50%;background:var(--green)}
+/* the four advisor groups were inheriting different section paddings, which
+   read as inconsistent gaps between them */
+.cluster{padding-block:clamp(48px,6vw,84px)}
+.cluster+.cluster{padding-top:0}
 .on-stone .spec li{border-bottom-color:#E3DFD6}
 
 /* ---- inline ruled list ---- */
@@ -397,10 +380,6 @@ section{padding-block:clamp(58px,7vw,116px)}
 .entry:hover .n{transform:translateX(4px)}
 
 /* ---- the stage rail reads as a timeline ---- */
-.roi-rail{position:relative}
-.roi-rail::before{content:"";position:absolute;left:0;top:0;bottom:0;width:1px;
-  background:linear-gradient(180deg,transparent,var(--mint),transparent);opacity:.35}
-@media(min-width:860px){.roi-rail::before{left:calc(8.333% + 3px)}}
 
 /* ---- portrait framed by the mark ---- */
 
@@ -451,9 +430,12 @@ section{padding-block:clamp(58px,7vw,116px)}
   .contact .arcmark{display:block;height:clamp(160px,42vw,220px);width:auto;
     left:auto;right:-16%;top:auto;bottom:clamp(-110px,-21vw,-80px);
     transform:none;opacity:.28}
-  .hero{padding-bottom:clamp(58px,16vw,86px)}
-  .hero-arcs{right:-15%;top:auto;bottom:clamp(-100px,-19vw,-72px);transform:none;
-    height:clamp(150px,40vw,205px);width:auto;opacity:.18}
+  /* The page-head marks work because the section's bottom edge is a real colour
+     change immediately after the copy. The hero has no such edge on one column -
+     the fact strip sits inside it - so the mark had nothing to be cut by and
+     landed in dead space below the facts. The hero carries the intro animation
+     and the type; it does not need it. */
+  .hero-arcs{display:none}
   .hero-actions{gap:12px}
   .hero-actions .btn{width:100%;justify-content:center}
 }
@@ -499,6 +481,11 @@ section{padding-block:clamp(58px,7vw,116px)}
   --edge:calc((100% - min(100%, var(--max))) / 2 + var(--gut));
   --arc-col:3}
 .arcbox>.wrap{position:relative;z-index:2}
+
+/* Full-width blocks, per the owner's "stretch across the page" notes. Declared
+   late so it beats the narrower measures set on .shead p and .sec-head p. */
+.stretch .shead,.stretch .sec-head,.stretch .shead p,.stretch .sec-head p,
+.stretch p,.stretch .statement,.stretch .lede,.stretch h2{max-width:none}
 
 /* ---- reveal ---- */
 @media(prefers-reduced-motion:no-preference){
@@ -611,28 +598,24 @@ section{padding-block:clamp(58px,7vw,116px)}
   <section class="band">
     <div class="wrap g">
       <div class="c-half-a rv">
-        <p>That conviction: advocacy &mdash; principled, strategic, and deeply human &mdash; is the
-        most powerful force available to companies and organizations that want to bring about change
-        for patients and people.</p>
-        <p>Three disciplines sit at the center of the work: advocacy, partnership, and strategic
-        communications. Each is a genuine strength on its own, and we know when to pursue them
-        separately and when to pursue them together.</p>
+        <p>That conviction: communications, advocacy, and partnership &mdash; principled, strategic,
+        and deeply human &mdash; are the most powerful forces available to companies and
+        organizations that want to bring about change for people.</p>
+        <p>Each is a genuine strength on its own, and we know when to pursue them separately and
+        when to pursue them together.</p>
         <p>When a company cannot move a market, when a policy stands between a patient and the
         treatment they need, when a clinical trial cannot find the community it is meant to serve,
-        when a cause finds itself without the voice or the allies to carry it forward, advocacy is
-        the lever.</p>
+        when a cause finds itself without the voice or the allies to carry it forward, these are
+        often the levers to pull.</p>
       </div>
       <div class="c-half-b rv" style="--i:1">
         <p>We are structured as a networked advisory practice, built to assemble the right people,
         voices, and strategies around any challenge. Time and again we have seen that organizations
         unable to achieve what they want &mdash; therapies reaching fewer patients than they should,
         coalitions whose voices go unheard, causes that stall at the edge of possible &mdash; are
-        missing a better-coordinated advocacy strategy rather than a better product.</p>
+        missing a better-coordinated advocacy and communications strategy rather than a better product.</p>
         <p>So we ask not just what a client needs, but who else needs to be at the table, what others
         need to hear from them, and how to make sure the right people are listening.</p>
-        <p>Advocacy and alliance-building are rarely one-time events. They are ongoing disciplines,
-        which is why a substantial share of our client relationships evolve into sustained, retained
-        partnerships. We are built, staffed, and resourced to be that ongoing partner.</p>
       </div>
     </div>
   </section>
@@ -640,31 +623,32 @@ section{padding-block:clamp(58px,7vw,116px)}
   <section class="on-forest airy">
     <div class="wrap g">
       <div class="c-side rv"><span class="label">01 / Mission</span></div>
-      <div class="c-main rv" style="--i:1">
-        <p class="statement" style="max-width:26ch">To advance patient outcomes and social progress by
-        building the advocacy infrastructure that transforms human insight into intelligent action.</p>
-        <p style="margin-top:30px;max-width:56ch">The partnerships, campaigns, coalitions, and
-        strategies. Access to knowledge, treatment, care, and the systems that govern them is
-        imperative. Advocacy is how we secure it.</p>
+      <div class="c-full rv stretch" style="--i:1">
+        <p class="statement">To advance patient outcomes and social progress by
+        building the communications and advocacy infrastructure that transforms human insight into
+        intelligent action.</p>
+        <p style="margin-top:30px;max-width:56ch">Access to knowledge, treatment, care, and the systems
+        that govern them is imperative. Advocacy, partnerships, campaigns, coalitions, and
+        strategies are how we impact them.</p>
       </div>
     </div>
   </section>
 
   <section class="band">
     <div class="wrap g">
-      <div class="c-side rv">
-        <div class="shead"><span class="idx">02 / Difference</span>
+      <div class="c-full rv stretch" style="margin-bottom:clamp(24px,3vw,40px)">
+        <div class="shead" style="max-width:none"><span class="idx">02 / Difference</span>
           <h2 class="d2">What sets us apart</h2>
           <p>Eight things clients tell us they do not find elsewhere.</p>
         </div>
       </div>
-      <div class="c-main">
+      <div class="c-full">
         <div class="idxlist" style="margin-top:6px">
-      <div class="it g rv"><h3>Deep credibility</h3><p>25+ years of founder expertise across women&rsquo;s health, aging, rare disease, oncology, neuromuscular and genetic disorders, chronic care, sexual health, infectious disease, vaccines, and global health equity.</p></div>
+      <div class="it g rv"><h3>Deep credibility</h3><p>25+ years of founder expertise across a wide array of social and health issues including women&rsquo;s health, aging, rare disease, oncology, neuromuscular and genetic disorders, chronic care, sexual health, infectious disease, vaccines, mental health, health equity, coverage issues, product quality and safety, product approvals and switches, access to care and services, misinformation, issues management, and policy campaigns.</p></div>
       <div class="it g rv"><h3>Networked expertise</h3><p>We source and coordinate best-in-class subject matter experts, advocates, and specialists for each engagement, giving clients exactly the team their challenge demands.</p></div>
       <div class="it g rv"><h3>Empathy and intelligence</h3><p>Emotional intelligence paired with analytical rigor, integrating responsible AI to amplify human judgment rather than replace it.</p></div>
       <div class="it g rv"><h3>Lean and accountable</h3><p>Senior leadership engages directly on accounts, and the networked model flexes capacity up or down, including multi-region, multi-workstream programs.</p></div>
-      <div class="it g rv"><h3>Partnership</h3><p>Shared goals, transparent communication, and outcomes measured by what changes for people. We bring compliance fluency so partnerships are built right from the start and hold up under scrutiny &mdash; transparency requirements, anti-kickback considerations, conflict-of-interest disclosure &mdash; working alongside client compliance and legal teams.</p></div>
+      <div class="it g rv"><h3>Partnership</h3><p>Shared goals, transparent communication, and outcomes measured by what changes for people. We bring compliance fluency &mdash; working alongside client compliance and legal teams &mdash; so partnerships are built right from the start and hold up under scrutiny.</p></div>
       <div class="it g rv"><h3>Mission-aligned</h3><p>Every engagement is passionately pursued for its potential to advance patient and social outcomes, and we measure success by what changes for people.</p></div>
       <div class="it g rv"><h3>Built for ongoing partnership</h3><p>Many engagements begin as a defined project and evolve into a retained relationship: sustained advocacy counsel, alliance management, and communications support as a client&rsquo;s needs change.</p></div>
       <div class="it g rv"><h3>Communications built around partnership</h3><p>The most effective communications often aren&rsquo;t built around a single voice. They&rsquo;re built around credible voices aligned on one message, changing minds and shaping behavior further than any organization can alone.</p></div>
@@ -675,22 +659,21 @@ section{padding-block:clamp(58px,7vw,116px)}
 
   <section class="on-navy">
     <div class="wrap g">
-      <div class="c-half-a rv">
+      <div class="c-full rv stretch">
         <span class="label" style="margin-bottom:22px">03 / Mindset</span>
         <h2 class="d2">Our partnership mindset</h2>
         <p style="margin-top:24px">Advocacy does not happen alone. It happens when the right voices
-        find one another, when shared purpose becomes shared strategy, and when individual commitment
+        are raised, when shared purpose becomes shared strategy, and when individual commitment
         scales into collective power.</p>
       </div>
-      <div class="c-half-b rv" style="--i:1">
+      <div class="c-full rv" style="--i:1;margin-top:clamp(22px,2.8vw,34px)">
         <p>Every partnership we engage in &mdash; whether with a global advocacy organization or a
         single patient advocate &mdash; reflects genuine respect for that partner&rsquo;s expertise,
         experience, and humanity. Partnerships are designed to create value for all parties. Trust is
         built over time, through consistent follow-through, honest communication, and shared
         commitment to mission.</p>
-        <p>This is also why so many EmpathIQ relationships last for years. Partnership is not a
-        one-time achievement. It is a sustained practice, and we are built to be the sustained
-        partner for it.</p>
+        <p>Partnership is a sustained practice. This approach is why so many EmpathIQ relationships
+        last for years.</p>
       </div>
     </div>
   </section>
@@ -704,21 +687,29 @@ section{padding-block:clamp(58px,7vw,116px)}
         <p class="role">CEO and Founding Partner</p>
         <div class="bio">
           <p>Lee has a passion for turning collaboration into real-world change, amplifying human
-          insight through responsible technology to advance outcomes and causes. She has led advocacy
-          and alliance development functions and advocacy expert advisory boards at numerous consulting
-          firms, and has helped build and manage many initiatives, campaigns, and organizations, with
-          deep expertise in writing, strategy, and execution across advocacy and communications.</p>
-          <p>She founded EmpathIQ Advisors, formerly Lynch Advocacy Solutions, on the conviction that
-          advocacy done early and done well is the most powerful force available to organizations
-          trying to change something for patients and people.</p>
-          <p>Her support for neurodiverse individuals and causes led her to found
-          <a href="https://rocketaround.com/">Rocket Around</a>, a content provider supporting adventure
-          and life for neurodiverse families through its website, social channels, and books including
-          <em>Rocket Around Washington DC</em>, <em>Rocket Around Switzerland</em>, and
-          <em>Rocket Around Germany</em>. Lee is a travel writer, a trained professional moderator, and
-          an executive board member of the <a href="https://www.culmoreclinic.org/">Culmore Clinic</a>,
-          a nonprofit offering free, compassionate medical care, counseling, and specialty referrals to
-          uninsured adults in northern Virginia. Lee and her family live in Alexandria, VA.</p>
+          insight through responsible technology to advance outcomes and causes. In her 25+ year
+          career, she has led advocacy and alliance development functions and advocacy expert
+          advisory boards at numerous leading communications consulting firms, and has helped build
+          and manage many initiatives, campaigns, and organizations, with deep expertise in writing,
+          strategy, and execution across advocacy and communications.</p>
+          <p>She founded EmpathIQ Advisors, formerly Lynch Advocacy Solutions, on the conviction
+          that advocacy and communications done early and well are the most powerful forces
+          available to organizations trying to change something for people. One of the things Lee
+          loves to do most is to bring together an array of stakeholders to see the full picture and
+          progress client goals and health and social impact causes through partnership-focused
+          initiatives, coalitions, policy communications and public affairs, access-focused and
+          strategic communications campaigns, organizational development, and stakeholder-focused
+          research.</p>
+          <p>Lee is a trained professional moderator and an executive board member of the
+          <a href="https://www.culmoreclinic.org/">Culmore Clinic</a>, a nonprofit offering free,
+          compassionate medical care, counseling, and specialty referrals to uninsured adults in
+          northern Virginia. Her support for neurodiverse individuals and causes led her to found
+          <a href="https://rocketaround.com/">Rocket Around</a>, a content provider supporting
+          adventure and life for neurodiverse families through its website, social channels, and
+          books including <em>Rocket Around Washington DC</em>, <em>Rocket Around Switzerland</em>,
+          and <em>Rocket Around Germany</em>. Lee is also a travel writer, publishing regularly for
+          the <a href="https://gcassociation.org/healthy-travel-blog/">Healthy Travel blog</a>. Lee
+          and her family live in Alexandria, VA.</p>
         </div>
         <ul class="ruled" style="margin-top:32px">
           <li>Master&rsquo;s degree in journalism, University of South Carolina</li>
@@ -736,11 +727,12 @@ section{padding-block:clamp(58px,7vw,116px)}
   <section class="contact airy cropped">
     <svg class="arcmark arc-right" viewBox="0 0 800 800" fill="none" aria-hidden="true"><circle class="ring" cx="400" cy="400" r="361.5" fill="none" stroke="#8ED0BC" stroke-width="27" stroke-linecap="round" pathLength="360" stroke-dasharray="245 115" transform="rotate(57.5 400 400)" style="--from:245;--d:0.00s"/><circle class="ring" cx="400" cy="400" r="244.0" fill="none" stroke="#1D9E75" stroke-width="34" stroke-linecap="round" pathLength="360" stroke-dasharray="247 113" transform="rotate(56.5 400 400)" style="--from:247;--d:0.16s"/><circle class="ring" cx="400" cy="400" r="126.0" fill="none" stroke="#FBFAF8" stroke-width="38" stroke-linecap="round" pathLength="360" stroke-dasharray="257 103" transform="rotate(51.5 400 400)" style="--from:257;--d:0.32s"/><circle class="dot" cx="400" cy="400" r="38" fill="#7A2050"/></svg>
     <div class="wrap g">
-      <div class="c-wide rv">
+      <div class="c-full rv stretch">
         <h2 class="d2">Tell us what&rsquo;s standing in the way.</h2>
         <p>A regulatory hurdle, a policy environment that hasn&rsquo;t moved, a community whose trust
-        hasn&rsquo;t been earned, a coalition that hasn&rsquo;t come together. Advocacy is very often
-        the key, and the first conversation costs nothing.</p>
+        hasn&rsquo;t been earned, a coalition that hasn&rsquo;t come together. Communications and
+        advocacy are very often the key. Whatever the issue or need, let&rsquo;s talk through it
+        and figure out the best solution.</p>
         <p style="margin-top:34px"><a class="btn" href="contact.html">Talk with us <span>&rarr;</span></a></p>
       </div>
     </div>
@@ -792,11 +784,6 @@ mb.addEventListener('click',function(){var o=nav.classList.toggle('open');
   mb.setAttribute('aria-expanded',String(o));mb.textContent=o?'Close':'Menu';});
 nav.addEventListener('click',function(e){
   if(e.target.tagName==='A'&&nav.classList.contains('open'))mb.click();});
-var roi=document.getElementById('roi');
-if(roi){roi.querySelectorAll('.switch button').forEach(function(b){
-  b.addEventListener('click',function(){roi.dataset.mode=b.dataset.mode;
-    roi.querySelectorAll('.switch button').forEach(function(x){
-      x.setAttribute('aria-pressed',String(x===b));});});});}
 
 if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&'IntersectionObserver' in window){
   var io=new IntersectionObserver(function(es){
