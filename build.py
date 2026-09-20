@@ -331,10 +331,10 @@ section{padding-block:clamp(58px,7vw,116px)}
   position:relative;border-bottom:1px solid var(--rule-2)}
 .spec li::before{content:"";position:absolute;left:0;top:15px;width:4px;height:4px;
   border-radius:50%;background:var(--green)}
-/* the four advisor groups were inheriting different section paddings, which
-   read as inconsistent gaps between them */
-.cluster{padding-block:clamp(48px,6vw,84px)}
-.cluster+.cluster{padding-top:0}
+/* Each advisor group is its own colour band, so the padding has to be symmetric:
+   zeroing the top made the gaps measure equal but left the group label sitting
+   flush against the top edge of its own band. */
+.cluster{padding-block:clamp(42px,5.2vw,70px)}
 .on-stone .spec li{border-bottom-color:#E3DFD6}
 
 /* ---- inline ruled list ---- */
@@ -1743,7 +1743,7 @@ CONTACT = f"""
   <section class="on-stone">
     <div class="wrap g">
       <div class="c-side rv">
-        <div class="shead"><span class="idx">Direct</span><h2 class="d3">How to reach us</h2></div>
+        <div class="shead"><h2 class="d3">How to reach us</h2></div>
       </div>
       <div class="c-full rv stretch" style="margin-bottom:clamp(18px,2.2vw,30px)">
         <p>Lee reads every inquiry personally and usually replies within two business days.</p>
@@ -1756,8 +1756,6 @@ CONTACT = f"""
             <a class="link" href="tel:+15712148799">571-214-8799</a></li>
           <li class="rv" style="--i:2"><span class="label">LinkedIn</span>
             <a class="link" href="https://www.linkedin.com/in/lee-lynch-2580476/">Lee Lynch</a></li>
-          <li class="rv" style="--i:3"><span class="label">Office</span>
-            <span>Alexandria, Virginia &mdash; working globally</span></li>
         </ul>
       </div>
     </div>
