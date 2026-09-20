@@ -167,11 +167,7 @@ section{padding-block:clamp(58px,7vw,116px)}
 .menu-btn{display:none}
 
 /* ---- hero ---- */
-.hero{position:relative;overflow:clip;
-  --cw:calc(min(100%, var(--max)) - 2 * var(--gut));
-  --colw:calc((var(--cw) - 11 * var(--col-gap)) / 12);
-  --edge:calc((100% - min(100%, var(--max))) / 2 + var(--gut));
-  --arc-col:13;min-height:clamp(560px,86vh,900px);
+.hero{position:relative;overflow:clip;min-height:clamp(560px,86vh,900px);
   display:flex;flex-direction:column;justify-content:center;
   padding-block:clamp(56px,8vw,110px) 0}
 .page-head{position:relative;overflow:clip;
@@ -182,14 +178,14 @@ section{padding-block:clamp(58px,7vw,116px)}
 .head-arcs{position:absolute;top:50%;right:-14%;transform:translateY(-50%);
   width:min(560px,52vw);opacity:.16;pointer-events:none;z-index:1}
 @media(max-width:1039px){.head-arcs{display:none}}
-/* The bleed is a fraction of the mark's own width, not a grid position, so the
-   same proportion is cropped at every viewport. Grid anchoring holds the crop
-   only until the viewport runs wider than --max, then the mark creeps back in. */
-.hero{--hw:clamp(520px,58vw,960px)}
-.hero-arcs{position:absolute;top:50%;left:auto;
-  right:calc(var(--hw) * -0.52);transform:translateY(-50%);
-  width:var(--hw);opacity:.15;pointer-events:none}
-@media(max-width:900px){.hero-arcs{right:-38%;opacity:.08}}
+/* the mark lives in .hero-top, which clips at the rule above the fact strip,
+   so it can never run down into the "25+ years / US-based, global" band */
+.hero-top{position:relative;overflow:clip;display:flex;flex-direction:column;
+  justify-content:center;flex:1 1 auto;
+  --cw:calc(min(100%, var(--max)) - 2 * var(--gut));
+  --colw:calc((var(--cw) - 11 * var(--col-gap)) / 12);
+  --edge:calc((100% - min(100%, var(--max))) / 2 + var(--gut))}
+.hero-mark{--arc-col:11.2;--arc-y:50%;width:clamp(560px,64vw,1060px);opacity:.16}
 .hero .wrap{position:relative;z-index:2;width:100%}
 .hero .tagline{font-size:clamp(1rem,1.35vw,1.2rem);color:var(--stone-ink);margin:0 0 clamp(26px,3.4vw,40px)}
 .hero h1{max-width:26ch}
@@ -425,7 +421,6 @@ section{padding-block:clamp(58px,7vw,116px)}
      the fact strip sits inside it - so the mark had nothing to be cut by and
      landed in dead space below the facts. The hero carries the intro animation
      and the type; it does not need it. */
-  .hero-arcs{display:none}
   .hero-actions{gap:12px}
   .hero-actions .btn{width:100%;justify-content:center}
 }
@@ -568,7 +563,15 @@ html.intro-run .site-head .mark{opacity:0}
 <main>
 
   <section class="hero" id="top">
-    <svg class="hero-arcs" viewBox="0 0 800 800" fill="none" aria-hidden="true"><g stroke-linecap="round" fill="none"><circle cx="400" cy="400" r="361.5" stroke="#8ED0BC" stroke-width="9.0" pathLength="360" stroke-dasharray="245 115" transform="rotate(57.5 400 400)"/><circle cx="400" cy="400" r="244.0" stroke="#1D9E75" stroke-width="11.3" pathLength="360" stroke-dasharray="247 113" transform="rotate(56.5 400 400)"/><circle cx="400" cy="400" r="126.0" stroke="#0F2C3F" stroke-width="12.7" pathLength="360" stroke-dasharray="257 103" transform="rotate(51.5 400 400)"/></g><circle cx="400" cy="400" r="14" fill="#7A2050"/></svg>
+    <div class="hero-top">
+    <svg class="arcmark hero-mark" viewBox="0 0 800 800" fill="none" aria-hidden="true">
+        <g>
+        <path class="ring" d="M 594.2 704.9 A 361.5 361.5 0 1 1 594.2 95.1" fill="none" stroke="var(--a1,#8ED0BC)" stroke-width="27" stroke-linecap="round" pathLength="100" stroke-dasharray="100" style="--from:100;--d:0.00s"/>
+        <path class="ring" d="M 534.7 603.5 A 244.0 244.0 0 1 1 534.7 196.5" fill="none" stroke="var(--a2,#1D9E75)" stroke-width="34" stroke-linecap="round" pathLength="100" stroke-dasharray="100" style="--from:100;--d:0.16s"/>
+        <path class="ring" d="M 478.4 498.6 A 126.0 126.0 0 1 1 478.4 301.4" fill="none" stroke="var(--a3,#0F2C3F)" stroke-width="38" stroke-linecap="round" pathLength="100" stroke-dasharray="100" style="--from:100;--d:0.32s"/>
+        </g>
+        <circle class="pt" cx="400" cy="400" r="38" fill="var(--a4,#7A2050)" style="--d:0.62s"/>
+        </svg>
     <div class="wrap">
       <p class="tagline serif-it rv">Advocacy at the Center. Partnership as the Path.</p>
       <h1 class="d2 rv" style="--i:1">A US-based global consultancy working at the intersection of
@@ -576,6 +579,7 @@ html.intro-run .site-head .mark{opacity:0}
       <div class="hero-actions rv" style="--i:3">
         <a class="btn" href="contact.html">Talk with us <span>&rarr;</span></a>
         <a class="btn btn-line" href="services.html">See what we do</a>
+      </div>
       </div>
     </div>
     <div class="hero-foot">
