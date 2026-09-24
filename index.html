@@ -79,7 +79,7 @@ h1,h2,h3{font-family:var(--display);font-weight:400;margin:0;text-wrap:balance}
 .d2{font-size:clamp(1.95rem,3.9vw,3.15rem);line-height:1.08;letter-spacing:-.022em}
 .d3{font-size:clamp(1.35rem,2.1vw,1.85rem);line-height:1.2;letter-spacing:-.014em}
 h3{font-size:1.06rem;line-height:1.32;letter-spacing:-.008em}
-.label{font-family:var(--sans);font-size:.66rem;font-weight:600;letter-spacing:.17em;
+.label{font-family:var(--sans);font-size:.72rem;font-weight:600;letter-spacing:.17em;
   text-transform:uppercase;color:var(--stone-ink);display:block}
 .serif-it{font-family:var(--display);font-style:italic;letter-spacing:0}
 p{margin:0 0 1.15em;max-width:62ch}
@@ -96,13 +96,20 @@ p:last-child{margin-bottom:0}
 .c-half-a{grid-column:1/-1}
 .c-half-b{grid-column:1/-1}
 .c-full{grid-column:1/-1}
-@media(max-width:1039px){.c-half-a{margin-bottom:1.15em}}
-@media(min-width:1040px){
-  .c-side{grid-column:1/4;position:sticky;top:104px;align-self:start}
+@media(max-width:899px){.c-half-a{margin-bottom:1.15em}}
+/* Starts at 900px, not 1040: a laptop window at 100% browser zoom often sits
+   just under 1040 CSS px, which was hiding the marks entirely at that setting.
+   The side lane takes 4 columns here so it stays wide enough to read, and
+   narrows to 3 once there is room. */
+@media(min-width:900px){
+  .c-side{grid-column:1/5;position:sticky;top:104px;align-self:start}
   .c-main{grid-column:5/13}
   .c-wide{grid-column:1/11}
   .c-half-a{grid-column:1/6}
   .c-half-b{grid-column:7/13}
+}
+@media(min-width:1200px){
+  .c-side{grid-column:1/4}
 }
 section{padding-block:clamp(58px,7vw,116px)}
 .band{border-top:1px solid var(--rule)}
@@ -114,7 +121,7 @@ section{padding-block:clamp(58px,7vw,116px)}
 
 /* ---- section index ---- */
 .shead{margin-bottom:clamp(26px,3.2vw,44px)}
-.shead .idx{font-size:.66rem;font-weight:600;letter-spacing:.17em;color:var(--green-ink);
+.shead .idx{font-size:.72rem;font-weight:600;letter-spacing:.17em;color:var(--green-ink);
   display:block;margin-bottom:14px}
 .shead p{margin-top:16px;color:var(--quiet);font-size:.98rem;max-width:34ch}
 
@@ -179,7 +186,7 @@ section{padding-block:clamp(58px,7vw,116px)}
 .page-head>.wrap{position:relative;z-index:2}
 .head-arcs{position:absolute;top:50%;right:-14%;transform:translateY(-50%);
   width:min(560px,52vw);opacity:.16;pointer-events:none;z-index:1}
-@media(max-width:1039px){.head-arcs{display:none}}
+@media(max-width:899px){.head-arcs{display:none}}
 /* the mark lives in .hero-top, which clips at the rule above the fact strip,
    so it can never run down into the "25+ years / US-based, global" band */
 .hero-top{position:relative;overflow:clip;display:flex;flex-direction:column;
@@ -234,7 +241,7 @@ section{padding-block:clamp(58px,7vw,116px)}
 /* ---- numbered service rows ---- */
 .rows{border-top:1px solid var(--rule)}
 .entry{border-bottom:1px solid var(--rule);padding-block:clamp(28px,3.4vw,44px)}
-.entry .n{grid-column:1/-1;font-size:.66rem;font-weight:600;letter-spacing:.17em;
+.entry .n{grid-column:1/-1;font-size:.72rem;font-weight:600;letter-spacing:.17em;
   color:var(--green-ink);margin-bottom:12px}
 .entry .hd{grid-column:1/-1;margin-bottom:14px}
 .entry .hd h3{font-family:var(--display);font-size:clamp(1.3rem,2vw,1.75rem);
@@ -348,7 +355,7 @@ section{padding-block:clamp(58px,7vw,116px)}
   width:calc((100% - min(var(--max),100%))/2 + var(--gut) + 262px);
   background:rgba(15,44,63,.06);z-index:0}
 .leader>.wrap{position:relative;z-index:1}
-@media(max-width:1039px){.leader::before{width:100%;bottom:auto;height:58%}}
+@media(max-width:899px){.leader::before{width:100%;bottom:auto;height:58%}}
 /* a cutout on a tonal panel: no frame, no box, so she sits on the page
    rather than in a window */
 .portrait{width:100%;max-width:230px;height:auto;display:block;
@@ -397,38 +404,48 @@ section{padding-block:clamp(58px,7vw,116px)}
        + (var(--arc-col) - .5) * var(--col-gap));
   transform:translate(-50%,-50%);
   width:clamp(460px,52vw,820px)}
-.arc-right{--arc-col:9}
+.arc-right{--arc-col:11.2}
+/* Closing band: its copy was asked to run the full width of the page, so the arc
+   can no longer sit beside it. It moves to the empty lower-right instead, cut by
+   the band's bottom edge - the same treatment used on narrow screens. */
+.contact{padding-bottom:clamp(160px,16vw,230px)}
+.contact .arcmark{top:auto;left:auto;right:-4%;bottom:-52%;transform:none;
+  width:clamp(400px,38vw,600px)}
 .on-navy .arcmark,.on-forest .arcmark,.deepest .arcmark,.contact .arcmark{opacity:.26}
 /* On the multi-column grid the marks fill horizontal dead space. On one column
    that space does not exist, so instead of hiding them the page head gains a
    band beneath the copy and the mark sits in it, bleeding off the right edge.
    Nothing sits behind text either way. */
-@media(max-width:1039px){
+@media(max-width:899px){
   .arcmark{display:none}
-  /* the mark is sized by HEIGHT so it can never be taller than the band the
-     padding creates, and bleeds off the right edge so it still reads as a
-     fragment rather than a small logo */
-  /* One column has no dead space to fill, so rather than manufacture a band
-     and float a mark in it, the mark is cut by the section's own bottom edge.
-     Sliced at the colour change it reads as deliberate, and only its top half
-     occupies any height. */
+  /* the closing band's copy runs the full width, so on a narrow screen the arc
+     sits cut by the section's bottom edge rather than behind the text */
+  .contact{padding-bottom:clamp(68px,18vw,98px)}
+  .contact .arcmark{display:block;height:clamp(160px,42vw,220px);width:auto;
+    left:auto;right:-16%;top:auto;bottom:clamp(-110px,-21vw,-80px);
+    transform:none;opacity:.28}
+  .hero-actions{gap:12px}
+  .hero-actions .btn{width:100%;justify-content:center}
+}
+/* 780-899: the copy leaves room on the right, so the page and hero marks keep
+   their right-hand position. A laptop window at 100% zoom often lands here. */
+@media(min-width:780px) and (max-width:899px){
+  .page-head .arcmark{display:block;top:50%;left:auto;right:calc(-0.30 * clamp(300px,46vw,420px));
+    bottom:auto;transform:translateY(-50%);width:clamp(300px,46vw,420px);height:auto;opacity:.16}
+  .page-head .mark-map{width:clamp(420px,72vw,640px);right:calc(-0.26 * clamp(420px,72vw,640px))}
+  .hero-mark{display:block;right:calc(-0.22 * clamp(320px,48vw,460px));
+    width:clamp(320px,48vw,460px);height:auto}
+}
+/* below 780 the headings take the full width, so the mark moves to the band
+   beneath the copy and is cut by the section edge */
+@media(max-width:779px){
   .page-head{padding-bottom:clamp(62px,17vw,92px)}
   .page-head .arcmark{display:block;height:clamp(150px,40vw,210px);width:auto;
     left:auto;right:-13%;top:auto;bottom:clamp(-105px,-20vw,-75px);
     transform:none;opacity:.17}
   .page-head .mark-map{height:clamp(150px,40vw,205px);right:-6%;
     bottom:clamp(-100px,-19vw,-72px);opacity:.22}
-  .contact{padding-bottom:clamp(68px,18vw,98px)}
-  .contact .arcmark{display:block;height:clamp(160px,42vw,220px);width:auto;
-    left:auto;right:-16%;top:auto;bottom:clamp(-110px,-21vw,-80px);
-    transform:none;opacity:.28}
-  /* The page-head marks work because the section's bottom edge is a real colour
-     change immediately after the copy. The hero has no such edge on one column -
-     the fact strip sits inside it - so the mark had nothing to be cut by and
-     landed in dead space below the facts. The hero carries the intro animation
-     and the type; it does not need it. */
-  .hero-actions{gap:12px}
-  .hero-actions .btn{width:100%;justify-content:center}
+}
 }
 
 /* the mark draws itself on arrival, the same motion the page opened with */
@@ -449,6 +466,8 @@ section{padding-block:clamp(58px,7vw,116px)}
 .on-navy .arcmark,.on-forest .arcmark,
 .deepest .arcmark,.contact .arcmark{--a3:#FBFAF8}
 .arc-edge{--arc-col:11.8;width:clamp(520px,58vw,1040px)}
+/* the dialog mark reads better pulled in from the edge */
+.mark-dialog{--arc-col:10.5}
 .mark-map{--arc-col:8.6;width:clamp(940px,108vw,1680px);opacity:.2}
 .on-navy .mark-map,.on-forest .mark-map,
 .deepest .mark-map,.contact .mark-map{opacity:.28}
@@ -489,7 +508,7 @@ section{padding-block:clamp(58px,7vw,116px)}
 /* ---- mobile nav ---- */
 @media(max-width:880px){
   .menu-btn{display:block;margin-left:auto;background:transparent;border:0;font:inherit;
-    font-size:.66rem;font-weight:600;letter-spacing:.17em;text-transform:uppercase;
+    font-size:.72rem;font-weight:600;letter-spacing:.17em;text-transform:uppercase;
     cursor:pointer;color:var(--navy);padding:8px 0}
   .nav{display:none;position:absolute;left:0;right:0;top:100%;flex-direction:column;
     align-items:stretch;gap:0;background:var(--paper);border-top:1px solid var(--rule);
@@ -531,7 +550,7 @@ section{padding-block:clamp(58px,7vw,116px)}
 #intro .line{opacity:0;animation:seen .01s linear var(--del) forwards}
 
 #introSkip{position:absolute;right:clamp(18px,4vw,46px);bottom:clamp(18px,4vw,46px);
-  background:none;border:0;font:inherit;font-size:.66rem;font-weight:600;letter-spacing:.17em;
+  background:none;border:0;font:inherit;font-size:.72rem;font-weight:600;letter-spacing:.17em;
   text-transform:uppercase;color:var(--stone-ink);cursor:pointer;padding:10px;
   opacity:0;animation:seen .01s linear 1s forwards;transition:color .2s}
 #introSkip:hover{color:var(--navy)}
@@ -625,12 +644,13 @@ html.intro-run .site-head .mark{opacity:0}
       </div>
       <div class="c-main rv" style="--i:1">
         <p class="label" style="margin-bottom:14px">Coming soon</p>
-        <h2 class="d3" style="max-width:26ch">This is where we will feature the partnerships behind
-        the work.</h2>
-        <p style="margin-top:16px;max-width:60ch">We are putting together a rotating look at the
-        coalitions, campaigns, and alliances we help build &mdash; ours and those of the
-        organizations we work alongside. Check back shortly, or get in touch if you would like to
-        talk about a partnership of your own.</p>
+        <h2 class="d3" style="max-width:26ch">Featured partnerships and perspectives</h2>
+        <p style="margin-top:16px;max-width:60ch">Check back soon for the partnerships and
+        perspectives behind the work.</p>
+        <p style="margin-top:14px;max-width:60ch">We are putting together a rotating look at the
+        coalitions, campaigns, partnerships, and perspectives we help build &mdash; our
+        network&rsquo;s, our clients&rsquo;, and those of the organizations we work alongside. Get in
+        touch if you would like to talk about one of your own.</p>
         <p style="margin-top:24px"><a class="arrow" href="contact.html">Talk with us <span>&rarr;</span></a></p>
       </div>
     </div>

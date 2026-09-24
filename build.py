@@ -53,7 +53,7 @@ INTRO_CSS = r"""
 #intro .line{opacity:0;animation:seen .01s linear var(--del) forwards}
 
 #introSkip{position:absolute;right:clamp(18px,4vw,46px);bottom:clamp(18px,4vw,46px);
-  background:none;border:0;font:inherit;font-size:.66rem;font-weight:600;letter-spacing:.17em;
+  background:none;border:0;font:inherit;font-size:.72rem;font-weight:600;letter-spacing:.17em;
   text-transform:uppercase;color:var(--stone-ink);cursor:pointer;padding:10px;
   opacity:0;animation:seen .01s linear 1s forwards;transition:color .2s}
 #introSkip:hover{color:var(--navy)}
@@ -138,7 +138,7 @@ h1,h2,h3{font-family:var(--display);font-weight:400;margin:0;text-wrap:balance}
 .d2{font-size:clamp(1.95rem,3.9vw,3.15rem);line-height:1.08;letter-spacing:-.022em}
 .d3{font-size:clamp(1.35rem,2.1vw,1.85rem);line-height:1.2;letter-spacing:-.014em}
 h3{font-size:1.06rem;line-height:1.32;letter-spacing:-.008em}
-.label{font-family:var(--sans);font-size:.66rem;font-weight:600;letter-spacing:.17em;
+.label{font-family:var(--sans);font-size:.72rem;font-weight:600;letter-spacing:.17em;
   text-transform:uppercase;color:var(--stone-ink);display:block}
 .serif-it{font-family:var(--display);font-style:italic;letter-spacing:0}
 p{margin:0 0 1.15em;max-width:62ch}
@@ -155,13 +155,20 @@ p:last-child{margin-bottom:0}
 .c-half-a{grid-column:1/-1}
 .c-half-b{grid-column:1/-1}
 .c-full{grid-column:1/-1}
-@media(max-width:1039px){.c-half-a{margin-bottom:1.15em}}
-@media(min-width:1040px){
-  .c-side{grid-column:1/4;position:sticky;top:104px;align-self:start}
+@media(max-width:899px){.c-half-a{margin-bottom:1.15em}}
+/* Starts at 900px, not 1040: a laptop window at 100% browser zoom often sits
+   just under 1040 CSS px, which was hiding the marks entirely at that setting.
+   The side lane takes 4 columns here so it stays wide enough to read, and
+   narrows to 3 once there is room. */
+@media(min-width:900px){
+  .c-side{grid-column:1/5;position:sticky;top:104px;align-self:start}
   .c-main{grid-column:5/13}
   .c-wide{grid-column:1/11}
   .c-half-a{grid-column:1/6}
   .c-half-b{grid-column:7/13}
+}
+@media(min-width:1200px){
+  .c-side{grid-column:1/4}
 }
 section{padding-block:clamp(58px,7vw,116px)}
 .band{border-top:1px solid var(--rule)}
@@ -173,7 +180,7 @@ section{padding-block:clamp(58px,7vw,116px)}
 
 /* ---- section index ---- */
 .shead{margin-bottom:clamp(26px,3.2vw,44px)}
-.shead .idx{font-size:.66rem;font-weight:600;letter-spacing:.17em;color:var(--green-ink);
+.shead .idx{font-size:.72rem;font-weight:600;letter-spacing:.17em;color:var(--green-ink);
   display:block;margin-bottom:14px}
 .shead p{margin-top:16px;color:var(--quiet);font-size:.98rem;max-width:34ch}
 
@@ -226,13 +233,11 @@ section{padding-block:clamp(58px,7vw,116px)}
 .menu-btn{display:none}
 
 /* ---- hero ---- */
-.hero{position:relative;overflow:clip;
-  --cw:calc(min(100%, var(--max)) - 2 * var(--gut));
-  --colw:calc((var(--cw) - 11 * var(--col-gap)) / 12);
-  --edge:calc((100% - min(100%, var(--max))) / 2 + var(--gut));
-  --arc-col:13;min-height:clamp(560px,86vh,900px);
-  display:flex;flex-direction:column;justify-content:center;
-  padding-block:clamp(56px,8vw,110px) 0}
+.hero{position:relative;overflow:clip;min-height:clamp(560px,86vh,900px);
+  display:flex;flex-direction:column;justify-content:stretch;
+  /* the generic section padding would otherwise sit outside .hero-top and
+     shorten the band the mark is centred in */
+  padding-block:0}
 .page-head{position:relative;overflow:clip;
   --cw:calc(min(100%, var(--max)) - 2 * var(--gut));
   --colw:calc((var(--cw) - 11 * var(--col-gap)) / 12);
@@ -240,15 +245,19 @@ section{padding-block:clamp(58px,7vw,116px)}
 .page-head>.wrap{position:relative;z-index:2}
 .head-arcs{position:absolute;top:50%;right:-14%;transform:translateY(-50%);
   width:min(560px,52vw);opacity:.16;pointer-events:none;z-index:1}
-@media(max-width:1039px){.head-arcs{display:none}}
-/* The bleed is a fraction of the mark's own width, not a grid position, so the
-   same proportion is cropped at every viewport. Grid anchoring holds the crop
-   only until the viewport runs wider than --max, then the mark creeps back in. */
-.hero{--hw:clamp(520px,58vw,960px)}
-.hero-arcs{position:absolute;top:50%;left:auto;
-  right:calc(var(--hw) * -0.52);transform:translateY(-50%);
-  width:var(--hw);opacity:.15;pointer-events:none}
-@media(max-width:900px){.hero-arcs{right:-38%;opacity:.08}}
+@media(max-width:899px){.head-arcs{display:none}}
+/* the mark lives in .hero-top, which clips at the rule above the fact strip,
+   so it can never run down into the "25+ years / US-based, global" band */
+.hero-top{position:relative;overflow:clip;display:flex;flex-direction:column;
+  justify-content:center;flex:1 1 auto;
+  /* padding lives here, not on .hero, so the band the mark is centred in runs
+     from just under the header all the way to the rule above the fact strip */
+  padding-block:clamp(56px,8vw,110px) clamp(40px,6vw,80px);
+  --cw:calc(min(100%, var(--max)) - 2 * var(--gut));
+  --colw:calc((var(--cw) - 11 * var(--col-gap)) / 12);
+  --edge:calc((100% - min(100%, var(--max))) / 2 + var(--gut))}
+.hero-mark{--arc-col:11.2;--arc-y:50%;opacity:.16;
+  height:calc(100% + clamp(50px,7vw,130px));width:auto}
 .hero .wrap{position:relative;z-index:2;width:100%}
 .hero .tagline{font-size:clamp(1rem,1.35vw,1.2rem);color:var(--stone-ink);margin:0 0 clamp(26px,3.4vw,40px)}
 .hero h1{max-width:26ch}
@@ -256,7 +265,7 @@ section{padding-block:clamp(58px,7vw,116px)}
 .hero-sub{margin:clamp(24px,2.8vw,34px) 0 0;color:var(--navy);max-width:34ch;
   font-size:clamp(1.15rem,1.55vw,1.45rem);line-height:1.35;font-weight:500;letter-spacing:-.008em}
 .hero-actions{display:flex;flex-wrap:wrap;gap:14px;margin-top:clamp(30px,3.6vw,44px)}
-.hero-foot{border-top:1px solid var(--rule);margin-top:clamp(48px,7vw,96px)}
+.hero-foot{border-top:1px solid var(--rule)}
 .hero-foot .g{padding-block:26px 30px}
 .fact{grid-column:1/-1;padding-block:14px}
 @media(min-width:760px){.fact{grid-column:span 4;padding-block:0}}
@@ -291,7 +300,7 @@ section{padding-block:clamp(58px,7vw,116px)}
 /* ---- numbered service rows ---- */
 .rows{border-top:1px solid var(--rule)}
 .entry{border-bottom:1px solid var(--rule);padding-block:clamp(28px,3.4vw,44px)}
-.entry .n{grid-column:1/-1;font-size:.66rem;font-weight:600;letter-spacing:.17em;
+.entry .n{grid-column:1/-1;font-size:.72rem;font-weight:600;letter-spacing:.17em;
   color:var(--green-ink);margin-bottom:12px}
 .entry .hd{grid-column:1/-1;margin-bottom:14px}
 .entry .hd h3{font-family:var(--display);font-size:clamp(1.3rem,2vw,1.75rem);
@@ -405,7 +414,7 @@ section{padding-block:clamp(58px,7vw,116px)}
   width:calc((100% - min(var(--max),100%))/2 + var(--gut) + 262px);
   background:rgba(15,44,63,.06);z-index:0}
 .leader>.wrap{position:relative;z-index:1}
-@media(max-width:1039px){.leader::before{width:100%;bottom:auto;height:58%}}
+@media(max-width:899px){.leader::before{width:100%;bottom:auto;height:58%}}
 /* a cutout on a tonal panel: no frame, no box, so she sits on the page
    rather than in a window */
 .portrait{width:100%;max-width:230px;height:auto;display:block;
@@ -454,39 +463,48 @@ section{padding-block:clamp(58px,7vw,116px)}
        + (var(--arc-col) - .5) * var(--col-gap));
   transform:translate(-50%,-50%);
   width:clamp(460px,52vw,820px)}
-.arc-right{--arc-col:9}
+.arc-right{--arc-col:11.2}
+/* Closing band: its copy was asked to run the full width of the page, so the arc
+   can no longer sit beside it. It moves to the empty lower-right instead, cut by
+   the band's bottom edge - the same treatment used on narrow screens. */
+.contact{padding-bottom:clamp(160px,16vw,230px)}
+.contact .arcmark{top:auto;left:auto;right:-4%;bottom:-52%;transform:none;
+  width:clamp(400px,38vw,600px)}
 .on-navy .arcmark,.on-forest .arcmark,.deepest .arcmark,.contact .arcmark{opacity:.26}
 /* On the multi-column grid the marks fill horizontal dead space. On one column
    that space does not exist, so instead of hiding them the page head gains a
    band beneath the copy and the mark sits in it, bleeding off the right edge.
    Nothing sits behind text either way. */
-@media(max-width:1039px){
+@media(max-width:899px){
   .arcmark{display:none}
-  /* the mark is sized by HEIGHT so it can never be taller than the band the
-     padding creates, and bleeds off the right edge so it still reads as a
-     fragment rather than a small logo */
-  /* One column has no dead space to fill, so rather than manufacture a band
-     and float a mark in it, the mark is cut by the section's own bottom edge.
-     Sliced at the colour change it reads as deliberate, and only its top half
-     occupies any height. */
+  /* the closing band's copy runs the full width, so on a narrow screen the arc
+     sits cut by the section's bottom edge rather than behind the text */
+  .contact{padding-bottom:clamp(68px,18vw,98px)}
+  .contact .arcmark{display:block;height:clamp(160px,42vw,220px);width:auto;
+    left:auto;right:-16%;top:auto;bottom:clamp(-110px,-21vw,-80px);
+    transform:none;opacity:.28}
+  .hero-actions{gap:12px}
+  .hero-actions .btn{width:100%;justify-content:center}
+}
+/* 780-899: the copy leaves room on the right, so the page and hero marks keep
+   their right-hand position. A laptop window at 100% zoom often lands here. */
+@media(min-width:780px) and (max-width:899px){
+  .page-head .arcmark{display:block;top:50%;left:auto;right:calc(-0.30 * clamp(300px,46vw,420px));
+    bottom:auto;transform:translateY(-50%);width:clamp(300px,46vw,420px);height:auto;opacity:.16}
+  .page-head .mark-map{width:clamp(420px,72vw,640px);right:calc(-0.26 * clamp(420px,72vw,640px))}
+  .hero-mark{display:block;right:calc(-0.22 * clamp(320px,48vw,460px));
+    width:clamp(320px,48vw,460px);height:auto}
+}
+/* below 780 the headings take the full width, so the mark moves to the band
+   beneath the copy and is cut by the section edge */
+@media(max-width:779px){
   .page-head{padding-bottom:clamp(62px,17vw,92px)}
   .page-head .arcmark{display:block;height:clamp(150px,40vw,210px);width:auto;
     left:auto;right:-13%;top:auto;bottom:clamp(-105px,-20vw,-75px);
     transform:none;opacity:.17}
   .page-head .mark-map{height:clamp(150px,40vw,205px);right:-6%;
     bottom:clamp(-100px,-19vw,-72px);opacity:.22}
-  .contact{padding-bottom:clamp(68px,18vw,98px)}
-  .contact .arcmark{display:block;height:clamp(160px,42vw,220px);width:auto;
-    left:auto;right:-16%;top:auto;bottom:clamp(-110px,-21vw,-80px);
-    transform:none;opacity:.28}
-  /* The page-head marks work because the section's bottom edge is a real colour
-     change immediately after the copy. The hero has no such edge on one column -
-     the fact strip sits inside it - so the mark had nothing to be cut by and
-     landed in dead space below the facts. The hero carries the intro animation
-     and the type; it does not need it. */
-  .hero-arcs{display:none}
-  .hero-actions{gap:12px}
-  .hero-actions .btn{width:100%;justify-content:center}
+}
 }
 
 /* the mark draws itself on arrival, the same motion the page opened with */
@@ -507,6 +525,8 @@ section{padding-block:clamp(58px,7vw,116px)}
 .on-navy .arcmark,.on-forest .arcmark,
 .deepest .arcmark,.contact .arcmark{--a3:#FBFAF8}
 .arc-edge{--arc-col:11.8;width:clamp(520px,58vw,1040px)}
+/* the dialog mark reads better pulled in from the edge */
+.mark-dialog{--arc-col:10.5}
 .mark-map{--arc-col:8.6;width:clamp(940px,108vw,1680px);opacity:.2}
 .on-navy .mark-map,.on-forest .mark-map,
 .deepest .mark-map,.contact .mark-map{opacity:.28}
@@ -547,7 +567,7 @@ section{padding-block:clamp(58px,7vw,116px)}
 /* ---- mobile nav ---- */
 @media(max-width:880px){
   .menu-btn{display:block;margin-left:auto;background:transparent;border:0;font:inherit;
-    font-size:.66rem;font-weight:600;letter-spacing:.17em;text-transform:uppercase;
+    font-size:.72rem;font-weight:600;letter-spacing:.17em;text-transform:uppercase;
     cursor:pointer;color:var(--navy);padding:8px 0}
   .nav{display:none;position:absolute;left:0;right:0;top:100%;flex-direction:column;
     align-items:stretch;gap:0;background:var(--paper);border-top:1px solid var(--rule);
@@ -592,19 +612,6 @@ def arcs(size, inner="#0F2C3F"):
 # fragment of the mark, never as a small whole logo sitting in the background.
 ARC_RINGS = [(361.5, 27, 115), (244.0, 34, 113), (126.0, 38, 103)]
 
-def arc_hero(cls):
-    """Hero/page-head arcs: the mark's true radii and gap angles, drawn at
-    hairline weight so it reads as a field rather than a logo."""
-    body = "".join(
-        f'<circle cx="400" cy="400" r="{r}" stroke="{c}" stroke-width="{w/3:.1f}" '
-        f'pathLength="360" stroke-dasharray="{360-g} {g}" '
-        f'transform="rotate({g/2:.1f} 400 400)"/>'
-        for (r, w, g), c in zip(ARC_RINGS, ["#8ED0BC", "#1D9E75", "#0F2C3F"]))
-    return (f'<svg class="{cls}" viewBox="0 0 800 800" fill="none" aria-hidden="true">'
-            f'<g stroke-linecap="round" fill="none">{body}</g>'
-            f'<circle cx="400" cy="400" r="14" fill="#7A2050"/></svg>')
-
-HERO_ARCS = arc_hero("hero-arcs")
 
 def arc_field(cls, rings=5, w=1.3, dot=3.4):
     """Oversized, low-opacity arcs used to anchor sections. The mark's geometry,
@@ -811,7 +818,15 @@ CONTACT_BAND = f"""
 # ---------------------------------------------------------------- home
 HOME = f"""
   <section class="hero" id="top">
-    {HERO_ARCS}
+    <div class="hero-top">
+    <svg class="arcmark hero-mark" viewBox="0 0 800 800" fill="none" aria-hidden="true">
+        <g>
+        <path class="ring" d="M 594.2 704.9 A 361.5 361.5 0 1 1 594.2 95.1" fill="none" stroke="var(--a1,#8ED0BC)" stroke-width="27" stroke-linecap="round" pathLength="100" stroke-dasharray="100" style="--from:100;--d:0.00s"/>
+        <path class="ring" d="M 534.7 603.5 A 244.0 244.0 0 1 1 534.7 196.5" fill="none" stroke="var(--a2,#1D9E75)" stroke-width="34" stroke-linecap="round" pathLength="100" stroke-dasharray="100" style="--from:100;--d:0.16s"/>
+        <path class="ring" d="M 478.4 498.6 A 126.0 126.0 0 1 1 478.4 301.4" fill="none" stroke="var(--a3,#0F2C3F)" stroke-width="38" stroke-linecap="round" pathLength="100" stroke-dasharray="100" style="--from:100;--d:0.32s"/>
+        </g>
+        <circle class="pt" cx="400" cy="400" r="38" fill="var(--a4,#7A2050)" style="--d:0.62s"/>
+        </svg>
     <div class="wrap">
       <p class="tagline serif-it rv">Advocacy at the Center. Partnership as the Path.</p>
       <h1 class="d2 rv" style="--i:1">A US-based global consultancy working at the intersection of
@@ -819,6 +834,7 @@ HOME = f"""
       <div class="hero-actions rv" style="--i:3">
         <a class="btn" href="contact.html">Talk with us <span>&rarr;</span></a>
         <a class="btn btn-line" href="services.html">See what we do</a>
+      </div>
       </div>
     </div>
     <div class="hero-foot">
@@ -858,12 +874,13 @@ HOME = f"""
       </div>
       <div class="c-main rv" style="--i:1">
         <p class="label" style="margin-bottom:14px">Coming soon</p>
-        <h2 class="d3" style="max-width:26ch">This is where we will feature the partnerships behind
-        the work.</h2>
-        <p style="margin-top:16px;max-width:60ch">We are putting together a rotating look at the
-        coalitions, campaigns, and alliances we help build &mdash; ours and those of the
-        organizations we work alongside. Check back shortly, or get in touch if you would like to
-        talk about a partnership of your own.</p>
+        <h2 class="d3" style="max-width:26ch">Featured partnerships and perspectives</h2>
+        <p style="margin-top:16px;max-width:60ch">Check back soon for the partnerships and
+        perspectives behind the work.</p>
+        <p style="margin-top:14px;max-width:60ch">We are putting together a rotating look at the
+        coalitions, campaigns, partnerships, and perspectives we help build &mdash; our
+        network&rsquo;s, our clients&rsquo;, and those of the organizations we work alongside. Get in
+        touch if you would like to talk about one of your own.</p>
         <p style="margin-top:24px"><a class="arrow" href="contact.html">Talk with us <span>&rarr;</span></a></p>
       </div>
     </div>
@@ -1076,7 +1093,7 @@ ABOUT = f"""
         are raised, when shared purpose becomes shared strategy, and when individual commitment
         scales into collective power.</p>
       </div>
-      <div class="c-full rv" style="--i:1;margin-top:clamp(22px,2.8vw,34px)">
+      <div class="c-full rv stretch" style="--i:1;margin-top:clamp(22px,2.8vw,34px)">
         <p>Every partnership we engage in &mdash; whether with a global advocacy organization or a
         single patient advocate &mdash; reflects genuine respect for that partner&rsquo;s expertise,
         experience, and humanity. Partnerships are designed to create value for all parties. Trust is
@@ -1099,7 +1116,9 @@ ABOUT = f"""
           <p>Lee has a passion for turning collaboration into real-world change, amplifying human
           insight through responsible technology to advance outcomes and causes. In her 25+ year
           career, she has led advocacy and alliance development functions and advocacy expert
-          advisory boards at numerous leading communications consulting firms, and has helped build
+          advisory boards at numerous leading communications consulting firms &mdash; including
+          leading Edelman&rsquo;s global health advocacy function by forming and leading Edelman
+          Health Alliances for a decade &mdash; and has helped build
           and manage many initiatives, campaigns, and organizations, with deep expertise in writing,
           strategy, and execution across advocacy and communications.</p>
           <p>She founded EmpathIQ Advisors, formerly Lynch Advocacy Solutions, on the conviction
@@ -1726,9 +1745,7 @@ CONTACT = f"""
         <path class="ring" d="M 467.3 165.5 A 244.0 244.0 0 0 1 467.3 634.5" fill="none" stroke="var(--a2,#1D9E75)" stroke-width="34" stroke-linecap="round" pathLength="100" stroke-dasharray="100" style="--from:100;--d:0.10s"/>
         <path class="ring" d="M 523.6 60.3 A 361.5 361.5 0 0 1 523.6 739.7" fill="none" stroke="var(--a1,#8ED0BC)" stroke-width="27" stroke-linecap="round" pathLength="100" stroke-dasharray="100" style="--from:100;--d:0.20s"/>
         <circle class="dot" cx="400" cy="400" r="38" fill="var(--a4,#7A2050)"/>
-        <circle class="pt" cx="212.0" cy="400.0" r="21.0" fill="var(--a4,#7A2050)" style="--d:0.62s"/>
-        <circle class="pt" cx="132.0" cy="400.0" r="14.0" fill="var(--a4,#7A2050)" style="--d:0.50s"/>
-        <circle class="pt" cx="64.0" cy="400.0" r="9.0" fill="var(--a4,#7A2050)" style="--d:0.40s"/>
+        <circle class="pt" cx="40" cy="400" r="7" fill="var(--a4,#7A2050)" style="--d:0.34s"/><circle class="pt" cx="104" cy="400" r="10" fill="var(--a4,#7A2050)" style="--d:0.42s"/><circle class="pt" cx="168" cy="400" r="14" fill="var(--a4,#7A2050)" style="--d:0.50s"/><circle class="pt" cx="232" cy="400" r="18" fill="var(--a4,#7A2050)" style="--d:0.58s"/><circle class="pt" cx="296" cy="400" r="23" fill="var(--a4,#7A2050)" style="--d:0.66s"/>
       </svg>
     <div class="wrap g">
       <div class="c-wide rv">
